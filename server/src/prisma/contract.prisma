@@ -1,21 +1,167 @@
-// use prisma-8
+// use prisma-next
 
-model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  username  String?
-  name      String?
-  posts     Post[]
-  createdAt TimestamptzString @default(now())
-  updatedAt temporal.updatedAtString()
+// ============================================================
+// ENUMS
+// ============================================================
+enum StaffRole {
+  ADMINISTRATOR
+  SUPERVISOR
+  INTERN_COORDINATOR
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String?
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-  createdAt TimestamptzString @default(now())
-  updatedAt temporal.updatedAtString()
+enum StaffStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum InternStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ProjectStatus {
+  OPEN
+  COMPLETED
+  ABANDONED
+  CANCELLED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  PERMITTED_ABSENCE
+}
+
+// ============================================================
+// STAFF
+// ============================================================
+model Staff {
+  id                 Uuid         @id @default(uuid())
+  name               String
+  email              String       @unique
+  password           String
+  role               StaffRole
+  status             StaffStatus  @default(ACTIVE)
+
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @default(now())
+
+  // Staff member who signed an intern in
+  attendanceSignIns  Attendance[] @relation("AttendanceSignedInBy")
+
+  // Staff member who signed an intern out
+  attendanceSignOuts Attendance[] @relation("AttendanceSignedOutBy")
+
+  @@map("staff")
+}
+
+// ============================================================
+// INTERN
+// ============================================================
+model Intern {
+  id           Uuid            @id @default(uuid())
+  name         String
+  phone        String
+  email        String          @unique
+  group        String
+  techArea     String
+  course       String?
+  skills       String?
+  startDate    DateTime
+  endDate      DateTime
+  status       InternStatus    @default(ACTIVE)
+
+  // Stores bcrypt hash of the 4-digit PIN.
+  // Never store the plaintext PIN.
+  pin          String
+
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @default(now())
+
+  attendance   Attendance[]
+  projectLinks ProjectIntern[]
+
+  @@map("intern")
+}
+
+// ============================================================
+// PROJECT
+// ============================================================
+model Project {
+  id          Uuid            @id @default(uuid())
+  name        String
+  description String?
+  techArea    String
+  department  String
+  status      ProjectStatus   @default(OPEN)
+  startDate   DateTime
+  endDate     DateTime
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @default(now())
+
+  interns     ProjectIntern[]
+
+  @@map("project")
+}
+
+// ============================================================
+// PROJECT <-> INTERN JUNCTION TABLE
+// ============================================================
+model ProjectIntern {
+  id        Uuid    @id @default(uuid())
+  projectId Uuid
+  internId  Uuid
+
+  project   Project @relation(fields:[projectId], references:[id], onDelete: Cascade)
+  intern    Intern  @relation(fields:[internId], references:[id], onDelete: Cascade)
+
+  // Prevent the same intern from being assigned
+  // to the same project more than once.
+  @@unique([projectId, internId])
+
+  @@index([projectId])
+  @@index([internId])
+
+  @@map("project_intern")
+}
+
+// ============================================================
+// ATTENDANCE
+// ============================================================
+model Attendance {
+  id           Uuid             @id @default(uuid())
+
+  internId     Uuid
+  date         Date
+
+  signInTime   DateTime?
+  signOutTime  DateTime?
+
+  signedInBy   Uuid?
+  signedOutBy  Uuid?
+
+  status       AttendanceStatus @default(ABSENT)
+
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @default(now())
+
+  // Intern whose attendance this record belongs to
+  intern       Intern           @relation(fields:[internId], references:[id], onDelete: Cascade)
+
+  // Staff member who performed sign-in
+  signInStaff  Staff?           @relation("AttendanceSignedInBy", fields:[signedInBy], references:[id], onDelete: SetNull)
+
+  // Staff member who performed sign-out
+  signOutStaff Staff?           @relation("AttendanceSignedOutBy", fields:[signedOutBy], references:[id], onDelete: SetNull)
+
+  // An intern should have only one attendance record per date.
+  @@unique([internId, date])
+
+  @@index([internId])
+  @@index([date])
+  @@index([signedInBy])
+  @@index([signedOutBy])
+
+  @@map("attendance")
 }
