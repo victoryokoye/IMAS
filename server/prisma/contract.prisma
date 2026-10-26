@@ -44,7 +44,7 @@ model Staff {
   status             StaffStatus  @default(ACTIVE)
 
   createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @default(now())
+  updatedAt          DateTime    
 
   // Staff member who signed an intern in
   attendanceSignIns  Attendance[] @relation("AttendanceSignedInBy")
