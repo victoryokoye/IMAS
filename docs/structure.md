@@ -1,6 +1,6 @@
-intern-management-system/
+IMAS/
 │
-├── frontend/ # React frontend application
+├── client/ # React frontend application
 │ │
 │ ├── src/
 │ │ │
@@ -22,21 +22,21 @@ intern-management-system/
 │ │ │ └── attendance/ # Attendance pages
 │ │ │
 │ │ ├── routes/ # Application routing
-│ │ │ ├── AppRoutes.tsx # Main route definitions
-│ │ │ └── ProtectedRoute.tsx # Protects authenticated routes
+│ │ │ ├── AppRoutes.jsx # Main route definitions
+│ │ │ └── ProtectedRoute.jsx # Protects authenticated routes
 │ │ │
 │ │ ├── hooks/ # Reusable React hooks
 │ │ │
 │ │ ├── services/ # API communication
-│ │ │ ├── api.ts # Axios instance/configuration
-│ │ │ ├── auth.service.ts # Authentication API calls
-│ │ │ ├── staff.service.ts # Staff API calls
-│ │ │ ├── intern.service.ts # Intern API calls
-│ │ │ ├── project.service.ts # Project API calls
-│ │ │ └── attendance.service.ts # Attendance API calls
+│ │ │ ├── api.js # Axios instance/configuration
+│ │ │ ├── auth.service.js # Authentication API calls
+│ │ │ ├── staff.service.js # Staff API calls
+│ │ │ ├── intern.service.js # Intern API calls
+│ │ │ ├── project.service.js # Project API calls
+│ │ │ └── attendance.service.js # Attendance API calls
 │ │ │
 │ │ ├── stores/ # Global Zustand state
-│ │ │ └── auth.store.ts # Authentication/user state
+│ │ │ └── auth.store.js # Authentication/user state
 │ │ │
 │ │ ├── types/ # Frontend TypeScript types
 │ │ │
@@ -44,18 +44,17 @@ intern-management-system/
 │ │ │
 │ │ ├── assets/ # Images, icons and static assets
 │ │ │
-│ │ ├── App.tsx # Root React component
-│ │ └── main.tsx # React application entry point
+│ │ ├── App.jsx # Root React component
+│ │ └── main.jsx # React application entry point
 │ │
 │ ├── public/ # Public static files
 │ ├── Dockerfile # Frontend Docker image
 │ ├── package.json # Frontend dependencies/scripts
-│ ├── vite.config.ts # Vite configuration
-│ ├── tsconfig.json # TypeScript configuration
+│ ├── vite.config.js # Vite configuration
 │ └── .env # Frontend environment variables
 │
 │
-├── backend/ # Node.js + Express TypeScript API
+├── server/ # Node.js + Express TypeScript API
 │ │
 │ ├── src/
 │ │ │
