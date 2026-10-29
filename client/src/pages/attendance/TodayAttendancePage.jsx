@@ -140,7 +140,7 @@ export default function TodayAttendancePage() {
                     onClick={() => setSelected({ intern, action: 'sign-in' })} // 3
                     className="px-3 py-2 rounded-lg bg-green-600 text-xs font-semibold text-white"
                   >
-                    Present
+                    Present-  
                   </button>
                 </>
               )}
