@@ -4,9 +4,9 @@
   "description": "",
   "main": "src/server.ts",
   "scripts": {
-    "start": "tsx src/server.ts",
     "dev": "tsx watch src/server.ts",
-    "contract:emit": "prisma contract emit"
+    "build": "prisma contract emit",
+    "start": "tsx src/server.ts"
   },
   "keywords": [],
   "author": "",
