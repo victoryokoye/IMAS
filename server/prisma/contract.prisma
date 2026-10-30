@@ -52,7 +52,10 @@ model Staff {
   // Staff member who signed an intern out
   attendanceSignOuts Attendance[] @relation("AttendanceSignedOutBy")
 
-  @@map("staff")
+  // staff member who forgot password
+  passwordResetTokens PasswordResetToken[]
+
+  @@map("staffs")
 }
 
 // ============================================================
@@ -73,7 +76,7 @@ model Intern {
 
   // Stores bcrypt hash of the 4-digit PIN.
   // Never store the plaintext PIN.
-  pin          String
+  pin          String?
 
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @default(now())
@@ -81,7 +84,7 @@ model Intern {
   attendance   Attendance[]
   projectLinks ProjectIntern[]
 
-  @@map("intern")
+  @@map("interns")
 }
 
 // ============================================================
@@ -102,7 +105,7 @@ model Project {
 
   interns     ProjectIntern[]
 
-  @@map("project")
+  @@map("projects")
 }
 
 // ============================================================
@@ -164,4 +167,18 @@ model Attendance {
   @@index([signedOutBy])
 
   @@map("attendance")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  staffId   String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  staff     Staff    @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@index([staffId])
+
+  @@map("password_reset_tokens")
 }

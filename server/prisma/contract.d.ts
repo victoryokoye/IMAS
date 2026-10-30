@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'88883155dc4461b647f0a141b531e823b326732ded80320523c0061b490c557f'>;
+  StorageHashBase<'c8beb30a7b1b03d2a769301ea23c27ef06202aa778eebd990def63b428b8f230'>;
 export type ExecutionHash =
-  ExecutionHashBase<'7797991e0c8e7cb0938f64a75cd24518a54167117e85c30f16f655ff1ca4230f'>;
+  ExecutionHashBase<'b1238a28cd4fa220f18f9be332f0aff34738087a7eec3a61e3b9748e33cb46b9'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -266,9 +266,16 @@ export type FieldOutputTypes = {
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly status: 'ACTIVE' | 'INACTIVE';
-      readonly pin: CodecTypes['pg/text@1']['output'];
+      readonly pin: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly PasswordResetToken: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly token: CodecTypes['pg/text@1']['output'];
+      readonly staffId: CodecTypes['pg/text@1']['output'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly Project: {
       readonly id: CodecTypes['pg/uuid@1']['output'];
@@ -325,9 +332,16 @@ export type FieldInputTypes = {
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly status: 'ACTIVE' | 'INACTIVE';
-      readonly pin: CodecTypes['pg/text@1']['input'];
+      readonly pin: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly PasswordResetToken: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly token: CodecTypes['pg/text@1']['input'];
+      readonly staffId: CodecTypes['pg/text@1']['input'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly Project: {
       readonly id: CodecTypes['pg/uuid@1']['input'];
@@ -372,7 +386,7 @@ export type StorageColumnTypes = {
       readonly status: 'PRESENT' | 'ABSENT' | 'PERMITTED_ABSENCE';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
-    readonly intern: {
+    readonly interns: {
       readonly course: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly email: CodecTypes['pg/text@1']['output'];
@@ -381,14 +395,26 @@ export type StorageColumnTypes = {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly phone: CodecTypes['pg/text@1']['output'];
-      readonly pin: CodecTypes['pg/text@1']['output'];
+      readonly pin: CodecTypes['pg/text@1']['output'] | null;
       readonly skills: CodecTypes['pg/text@1']['output'] | null;
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly status: 'ACTIVE' | 'INACTIVE';
       readonly techArea: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
-    readonly project: {
+    readonly password_reset_tokens: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly staffId: CodecTypes['pg/text@1']['output'];
+      readonly token: CodecTypes['pg/text@1']['output'];
+    };
+    readonly project_intern: {
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly internId: CodecTypes['pg/uuid@1']['output'];
+      readonly projectId: CodecTypes['pg/uuid@1']['output'];
+    };
+    readonly projects: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly department: CodecTypes['pg/text@1']['output'];
       readonly description: CodecTypes['pg/text@1']['output'] | null;
@@ -400,12 +426,7 @@ export type StorageColumnTypes = {
       readonly techArea: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
-    readonly project_intern: {
-      readonly id: CodecTypes['pg/uuid@1']['output'];
-      readonly internId: CodecTypes['pg/uuid@1']['output'];
-      readonly projectId: CodecTypes['pg/uuid@1']['output'];
-    };
-    readonly staff: {
+    readonly staffs: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly email: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/uuid@1']['output'];
@@ -431,7 +452,7 @@ export type StorageColumnInputTypes = {
       readonly status: 'PRESENT' | 'ABSENT' | 'PERMITTED_ABSENCE';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
-    readonly intern: {
+    readonly interns: {
       readonly course: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly email: CodecTypes['pg/text@1']['input'];
@@ -440,14 +461,26 @@ export type StorageColumnInputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly phone: CodecTypes['pg/text@1']['input'];
-      readonly pin: CodecTypes['pg/text@1']['input'];
+      readonly pin: CodecTypes['pg/text@1']['input'] | null;
       readonly skills: CodecTypes['pg/text@1']['input'] | null;
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly status: 'ACTIVE' | 'INACTIVE';
       readonly techArea: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
-    readonly project: {
+    readonly password_reset_tokens: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly staffId: CodecTypes['pg/text@1']['input'];
+      readonly token: CodecTypes['pg/text@1']['input'];
+    };
+    readonly project_intern: {
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly internId: CodecTypes['pg/uuid@1']['input'];
+      readonly projectId: CodecTypes['pg/uuid@1']['input'];
+    };
+    readonly projects: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly department: CodecTypes['pg/text@1']['input'];
       readonly description: CodecTypes['pg/text@1']['input'] | null;
@@ -459,12 +492,7 @@ export type StorageColumnInputTypes = {
       readonly techArea: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
-    readonly project_intern: {
-      readonly id: CodecTypes['pg/uuid@1']['input'];
-      readonly internId: CodecTypes['pg/uuid@1']['input'];
-      readonly projectId: CodecTypes['pg/uuid@1']['input'];
-    };
-    readonly staff: {
+    readonly staffs: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly email: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/uuid@1']['input'];
@@ -489,7 +517,8 @@ export namespace Models {
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     attendanceSignIns: public_Attendance[];
     attendanceSignOuts: public_Attendance[];
-    readonly [RelationKeys]?: 'attendanceSignIns' | 'attendanceSignOuts';
+    passwordResetTokens: public_PasswordResetToken[];
+    readonly [RelationKeys]?: 'attendanceSignIns' | 'attendanceSignOuts' | 'passwordResetTokens';
   };
   export type public_Intern = {
     id: CodecTypes['pg/uuid@1']['output'];
@@ -503,7 +532,7 @@ export namespace Models {
     startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
     endDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
     status: 'ACTIVE' | 'INACTIVE';
-    pin: CodecTypes['pg/text@1']['output'];
+    pin: CodecTypes['pg/text@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     attendance: public_Attendance[];
@@ -548,6 +577,15 @@ export namespace Models {
     signOutStaff: public_Staff | null;
     readonly [RelationKeys]?: 'intern' | 'signInStaff' | 'signOutStaff';
   };
+  export type public_PasswordResetToken = {
+    id: CodecTypes['pg/text@1']['output'];
+    token: CodecTypes['pg/text@1']['output'];
+    staffId: CodecTypes['pg/text@1']['output'];
+    expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    staff: public_Staff;
+    readonly [RelationKeys]?: 'staff';
+  };
 }
 
 export declare const models: {
@@ -557,6 +595,7 @@ export declare const models: {
     Project: Models.public_Project;
     ProjectIntern: Models.public_ProjectIntern;
     Attendance: Models.public_Attendance;
+    PasswordResetToken: Models.public_PasswordResetToken;
   };
 };
 
@@ -674,7 +713,7 @@ type ContractBase = Omit<
                   };
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'intern';
+                    readonly tableName: 'interns';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -686,7 +725,7 @@ type ContractBase = Omit<
                   };
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'staff';
+                    readonly tableName: 'staffs';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -698,13 +737,13 @@ type ContractBase = Omit<
                   };
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'staff';
+                    readonly tableName: 'staffs';
                     readonly columns: readonly ['id'];
                   };
                 },
               ];
             };
-            readonly intern: {
+            readonly interns: {
               columns: {
                 readonly id: {
                   readonly nativeType: 'uuid';
@@ -768,7 +807,7 @@ type ContractBase = Omit<
                 readonly pin: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
+                  readonly nullable: true;
                 };
                 readonly createdAt: {
                   readonly nativeType: 'timestamptz';
@@ -788,7 +827,122 @@ type ContractBase = Omit<
               indexes: readonly [];
               foreignKeys: readonly [];
             };
-            readonly project: {
+            readonly password_reset_tokens: {
+              columns: {
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly token: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly staffId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly expiresAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['token'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'password_reset_tokens_staffId_idx_ce92c64e';
+                  readonly prefix: 'password_reset_tokens_staffId_idx';
+                  readonly columns: readonly ['staffId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'password_reset_tokens';
+                    readonly columns: readonly ['staffId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'staffs';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly project_intern: {
+              columns: {
+                readonly id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly projectId: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly internId: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['projectId', 'internId'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'project_intern_projectId_idx_a96e4d92';
+                  readonly prefix: 'project_intern_projectId_idx';
+                  readonly columns: readonly ['projectId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'project_intern_internId_idx_b353a134';
+                  readonly prefix: 'project_intern_internId_idx';
+                  readonly columns: readonly ['internId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'project_intern';
+                    readonly columns: readonly ['projectId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'projects';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'project_intern';
+                    readonly columns: readonly ['internId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'interns';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly projects: {
               columns: {
                 readonly id: {
                   readonly nativeType: 'uuid';
@@ -852,68 +1006,7 @@ type ContractBase = Omit<
               indexes: readonly [];
               foreignKeys: readonly [];
             };
-            readonly project_intern: {
-              columns: {
-                readonly id: {
-                  readonly nativeType: 'uuid';
-                  readonly codecId: 'pg/uuid@1';
-                  readonly nullable: false;
-                };
-                readonly projectId: {
-                  readonly nativeType: 'uuid';
-                  readonly codecId: 'pg/uuid@1';
-                  readonly nullable: false;
-                };
-                readonly internId: {
-                  readonly nativeType: 'uuid';
-                  readonly codecId: 'pg/uuid@1';
-                  readonly nullable: false;
-                };
-              };
-              primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [{ readonly columns: readonly ['projectId', 'internId'] }];
-              indexes: readonly [
-                {
-                  readonly name: 'project_intern_projectId_idx_a96e4d92';
-                  readonly prefix: 'project_intern_projectId_idx';
-                  readonly columns: readonly ['projectId'];
-                  readonly unique: false;
-                },
-                {
-                  readonly name: 'project_intern_internId_idx_b353a134';
-                  readonly prefix: 'project_intern_internId_idx';
-                  readonly columns: readonly ['internId'];
-                  readonly unique: false;
-                },
-              ];
-              foreignKeys: readonly [
-                {
-                  readonly source: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'project_intern';
-                    readonly columns: readonly ['projectId'];
-                  };
-                  readonly target: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'project';
-                    readonly columns: readonly ['id'];
-                  };
-                },
-                {
-                  readonly source: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'project_intern';
-                    readonly columns: readonly ['internId'];
-                  };
-                  readonly target: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'intern';
-                    readonly columns: readonly ['id'];
-                  };
-                },
-              ];
-            };
-            readonly staff: {
+            readonly staffs: {
               columns: {
                 readonly id: {
                   readonly nativeType: 'uuid';
@@ -959,7 +1052,6 @@ type ContractBase = Omit<
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: false;
-                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
@@ -1000,9 +1092,9 @@ type ContractBase = Omit<
   readonly target: 'postgres';
   readonly targetFamily: 'sql';
   readonly roots: {
-    readonly staff: { readonly namespace: 'public' & NamespaceId; readonly model: 'Staff' };
-    readonly intern: { readonly namespace: 'public' & NamespaceId; readonly model: 'Intern' };
-    readonly project: { readonly namespace: 'public' & NamespaceId; readonly model: 'Project' };
+    readonly staffs: { readonly namespace: 'public' & NamespaceId; readonly model: 'Staff' };
+    readonly interns: { readonly namespace: 'public' & NamespaceId; readonly model: 'Intern' };
+    readonly projects: { readonly namespace: 'public' & NamespaceId; readonly model: 'Project' };
     readonly project_intern: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'ProjectIntern';
@@ -1010,6 +1102,10 @@ type ContractBase = Omit<
     readonly attendance: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'Attendance';
+    };
+    readonly password_reset_tokens: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'PasswordResetToken';
     };
   };
   readonly domain: {
@@ -1179,7 +1275,7 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly pin: {
-                readonly nullable: false;
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly createdAt: {
@@ -1222,7 +1318,7 @@ type ContractBase = Omit<
               };
             };
             readonly storage: {
-              readonly table: 'intern';
+              readonly table: 'interns';
               readonly namespaceId: 'public';
               readonly fields: {
                 readonly id: { readonly column: 'id' };
@@ -1239,6 +1335,61 @@ type ContractBase = Omit<
                 readonly pin: { readonly column: 'pin' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly PasswordResetToken: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly token: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly staffId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly expiresAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly staff: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Staff';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['staffId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'password_reset_tokens';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly token: { readonly column: 'token' };
+                readonly staffId: { readonly column: 'staffId' };
+                readonly expiresAt: { readonly column: 'expiresAt' };
+                readonly createdAt: { readonly column: 'createdAt' };
               };
             };
           };
@@ -1311,7 +1462,7 @@ type ContractBase = Omit<
               };
             };
             readonly storage: {
-              readonly table: 'project';
+              readonly table: 'projects';
               readonly namespaceId: 'public';
               readonly fields: {
                 readonly id: { readonly column: 'id' };
@@ -1442,9 +1593,20 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['signedOutBy'];
                 };
               };
+              readonly passwordResetTokens: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'PasswordResetToken';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['staffId'];
+                };
+              };
             };
             readonly storage: {
-              readonly table: 'staff';
+              readonly table: 'staffs';
               readonly namespaceId: 'public';
               readonly fields: {
                 readonly id: { readonly column: 'id' };
@@ -1537,7 +1699,7 @@ type ContractBase = Omit<
         {
           readonly ref: {
             readonly namespace: 'public';
-            readonly table: 'intern';
+            readonly table: 'interns';
             readonly column: 'id';
           };
           readonly onCreate: { readonly kind: 'generator'; readonly id: 'uuidv4' };
@@ -1545,7 +1707,7 @@ type ContractBase = Omit<
         {
           readonly ref: {
             readonly namespace: 'public';
-            readonly table: 'project';
+            readonly table: 'password_reset_tokens';
             readonly column: 'id';
           };
           readonly onCreate: { readonly kind: 'generator'; readonly id: 'uuidv4' };
@@ -1561,7 +1723,15 @@ type ContractBase = Omit<
         {
           readonly ref: {
             readonly namespace: 'public';
-            readonly table: 'staff';
+            readonly table: 'projects';
+            readonly column: 'id';
+          };
+          readonly onCreate: { readonly kind: 'generator'; readonly id: 'uuidv4' };
+        },
+        {
+          readonly ref: {
+            readonly namespace: 'public';
+            readonly table: 'staffs';
             readonly column: 'id';
           };
           readonly onCreate: { readonly kind: 'generator'; readonly id: 'uuidv4' };

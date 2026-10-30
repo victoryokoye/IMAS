@@ -1,39 +1,9 @@
-import type {
-  CreateStaffInput,
-  Staff,
-  LoginStaffInput,
-  CreateInternInput,
-  CreateInternResult,
-} from "./auth.types";
-import { db } from "../../prisma/db";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import jwt from "jsonwebtoken";
-
-// Staff registration
-export const registerStaff = async ({
-  name,
-  email,
-  password,
-  role,
-}: CreateStaffInput): Promise<Staff> => {
-  const existingStaff = await db.orm.public.Staff.where({ email }).first();
-
-  if (existingStaff) {
-    throw new Error("Staff with this email already exists");
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const staff = await db.orm.public.Staff.create({
-    name,
-    email,
-    password: hashedPassword,
-    role,
-    updatedAt: Temporal.Now.instant(),
-  });
-
-  return staff;
-};
+import type { Staff } from "./auth.types";
+import type { LoginStaffInput } from "./auth.schema";
+import { db } from "../../prisma/db";
 
 // Staff Login
 export const loginStaff = async ({
@@ -73,45 +43,85 @@ export const loginStaff = async ({
   };
 };
 
-// Intern onboarding
-export const createIntern = async (
-  data: CreateInternInput,
-): Promise<CreateInternResult> => {
-  const existingIntern = await db.orm.public.Intern.where({
-    email: data.email,
+// Get current authenticated staff
+export const getCurrentStaff = async (
+  staffId: string,
+): Promise<Omit<Staff, "password">> => {
+  const staff = await db.orm.public.Staff.where({
+    id: staffId,
   }).first();
 
-  if (existingIntern) {
-    throw new Error("Intern with this email already exists");
+  if (!staff) {
+    throw new Error("Staff not found");
   }
 
-  const plainPin = Math.floor(1000 + Math.random() * 9000).toString();
+  const { password, ...staffDetails } = staff;
 
-  const hashedPin = await bcrypt.hash(plainPin, 10);
+  return staffDetails;
+};
 
-  const startDate = Temporal.Instant.fromEpochMilliseconds(
-    data.startDate.getTime(),
+export const forgotPassword = async (email: string) => {
+  // Check if user with the email exist
+  const user = await db.orm.public.Staff.where({ email }).first();
+  // If no user retur something went wrong
+  if (!user) {
+    throw new Error("Something went wrong");
+  }
+
+  // If user exists generate token
+  const token = crypto.randomBytes(32).toString("hex");
+  // Hash token
+  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+  const expiresAt = Temporal.Instant.fromEpochMilliseconds(
+    Date.now() + 10 * 60 * 1000,
   );
 
-  const endDate = Temporal.Instant.fromEpochMilliseconds(
-    data.endDate.getTime(),
-  );
-
-  const intern = await db.orm.public.Intern.create({
-    name: data.name,
-    phone: data.phone,
-    email: data.email,
-    group: data.group,
-    techArea: data.techArea,
-    course: data.course ?? null,
-    skills: data.skills,
-    startDate,
-    endDate,
-    pin: hashedPin,
+  // store token hash + expiry
+  await db.orm.public.PasswordResetToken.create({
+    staffId: user.id,
+    token: tokenHash,
+    expiresAt,
   });
 
-  return {
-    intern,
-    pin: plainPin,
-  };
+  // genrate reset link
+  const resetLink = `http://localhost:5173/reset-password?token=${token}`;
+
+  // retur reset link
+  return resetLink;
+  // Recice token
+};
+
+export const resetPassword = async (token: string, newPassword: string) => {
+  // Hash token
+  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+  // Compare Hashed token with reset token from db
+  const resetToken = await db.orm.public.PasswordResetToken.where({
+    token: tokenHash,
+  }).first();
+  // check expiry
+  if (!resetToken?.expiresAt) {
+    throw new Error("Invalid token");
+  }
+
+  if (
+    Temporal.Instant.compare(Temporal.Now.instant(), resetToken.expiresAt) > 0
+  ) {
+    throw new Error("Expired token");
+  }
+
+  // check if token has userId
+  if (!resetToken?.staffId) {
+    throw new Error("Invalid token");
+  }
+
+  // Hash new password
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  // update new password in db
+  await db.orm.public.Staff.where({
+    id: resetToken.staffId,
+  }).update({ password: hashedPassword });
+
+  // delete reset token
+  await db.orm.public.PasswordResetToken.where(resetToken).delete();
 };
