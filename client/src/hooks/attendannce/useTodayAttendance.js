@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 
-const INTERNS_URL = '/api/v1/interns'; // assumed: relative base path
-const ATTENDANCE_URL = '/api/v1/attendance'; // assumed: relative base path
+const BASE = '/api/v1'; // assumed: relative base path
 
-export function useTodayAttendance() {
+export function useTodayAttendance({ search, page, limit }) {
   const [interns, setInterns] = useState([]);
+  const [stats, setStats] = useState({ total: 0, here: 0, away: 0 });
+  const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -14,18 +15,37 @@ export function useTodayAttendance() {
     try {
       const today = new Date().toISOString().slice(0, 10); // assumed: UTC date counts as "today"
       const opts = { credentials: 'include' };
-      const [internsRes, attendanceRes] = await Promise.all([
-        fetch(`${INTERNS_URL}?status=ACTIVE&limit=100`, opts), // assumed: limit 100 is allowed
-        fetch(`${ATTENDANCE_URL}?startDate=${today}&endDate=${today}&limit=100`, opts), // assumed: limit 100 is allowed
-      ]);
-      if (!internsRes.ok || !attendanceRes.ok) throw new Error('Could not load attendance');
-      const internsJson = await internsRes.json();
-      const attendanceJson = await attendanceRes.json();
 
-      const byIntern = new Map(attendanceJson.data.map((r) => [r.internId, r]));
+      const internParams = new URLSearchParams({
+        status: 'ACTIVE', // assumed: only active interns are listed
+        page: String(page),
+        limit: String(limit),
+      });
+      if (search) internParams.set('search', search);
+
+      const [internsRes, summaryRes] = await Promise.all([ // 1
+        fetch(`${BASE}/interns?${internParams}`, opts),
+        fetch(`${BASE}/dashboard/summary`, opts),
+      ]);
+      if (!internsRes.ok || !summaryRes.ok) throw new Error('Could not load attendance');
+      const internsJson = await internsRes.json();
+      const summaryJson = await summaryRes.json();
+
+      const records = await Promise.all(
+        internsJson.data.map(async (i) => {
+          const res = await fetch(
+            `${BASE}/attendance?internId=${i.id}&startDate=${today}&endDate=${today}&limit=1`,
+            opts
+          );
+          if (!res.ok) throw new Error('Could not load attendance');
+          const json = await res.json();
+          return json.data[0] || null;
+        })
+      );
+
       setInterns(
-        internsJson.data.map((i) => {
-          const rec = byIntern.get(i.id);
+        internsJson.data.map((i, idx) => {
+          const rec = records[idx];
           return {
             id: i.id,
             name: i.fullName,
@@ -36,16 +56,22 @@ export function useTodayAttendance() {
           };
         })
       );
+      setStats({
+        total: summaryJson.data.activeInterns,
+        here: summaryJson.data.currentlyPresent,
+        away: summaryJson.data.activeInterns - summaryJson.data.currentlyPresent, // assumed: away = active minus currently present
+      });
+      setTotalPages(internsJson.meta.totalPages);
     } catch (err) {
       setError(err.message);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [search, page, limit]);
 
   useEffect(() => {
     fetchInterns();
   }, [fetchInterns]);
 
-  return { interns, isLoading, error, refetch: fetchInterns };
+  return { interns, stats, totalPages, isLoading, error, refetch: fetchInterns };
 }

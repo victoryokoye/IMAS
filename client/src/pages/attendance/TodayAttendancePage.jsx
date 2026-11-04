@@ -4,108 +4,80 @@ import { useAuthStore } from '../../stores/auth.store';
 import { useTodayAttendance } from '../../hooks/attendance/useTodayAttendance';
 import PinDialog from './PinDialog';
 
-// const CAN_MARK = ['admin', 'intern_supervisor'];
 const CAN_MARK = ['ADMINISTRATOR', 'SUPERVISOR', 'INTERN_COORDINATOR'];
-const FILTERS = ['all', 'here', 'away'];
+const LIMIT = 10; // assumed: records per page, spec default is 10
 
 export default function TodayAttendancePage() {
   const staff = useAuthStore((s) => s.staff);
-  const { interns, isLoading, error, refetch } = useTodayAttendance();
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState('all');
+  const [page, setPage] = useState(1);
+  const { interns, stats, totalPages, isLoading, error, refetch } =
+    useTodayAttendance({ search, page, limit: LIMIT });
   const [selected, setSelected] = useState(null);
   const navigate = useNavigate();
 
-  const canMark = CAN_MARK.includes(staff?.role); // 1
-
-  const hereCount = interns.filter((i) => i.status === 'here').length;
-  const awayCount = interns.length - hereCount;
-
-  const visible = interns.filter(
-    (i) =>
-      (filter === 'all' || i.status === filter) &&
-      i.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const canMark = CAN_MARK.includes(staff?.role);
 
   return (
     <div className="p-4 md:p-8">
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Attendance Monitor</h1>
-          <p className="text-sm text-slate-500">
-            See who is here today and mark attendance.
-          </p>
-        </div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-slate-900">Attendance Monitor</h1>
+        <p className="text-sm text-slate-500">See who is here today and mark attendance.</p>
       </div>
 
       <div className="grid grid-cols-3 gap-3 mb-6">
         <div className="bg-white rounded-xl shadow p-4">
           <p className="text-xs text-slate-500">Total</p>
-          <p className="text-2xl font-bold">{interns.length}</p>
+          <p className="text-2xl font-bold">{stats.total}</p>
         </div>
         <div className="bg-white rounded-xl shadow p-4">
           <p className="text-xs text-slate-500">Here Now</p>
-          <p className="text-2xl font-bold">{hereCount}</p>
+          <p className="text-2xl font-bold">{stats.here}</p>
         </div>
         <div className="bg-white rounded-xl shadow p-4">
           <p className="text-xs text-slate-500">Away</p>
-          <p className="text-2xl font-bold">{awayCount}</p>
+          <p className="text-2xl font-bold">{stats.away}</p>
         </div>
       </div>
 
       <input
         type="text"
         value={search}
-        onChange={(e) => setSearch(e.target.value)} // 2
+        onChange={(e) => {
+          setSearch(e.target.value);
+          setPage(1); // 2
+        }}
         placeholder="Search intern name..."
-        className="w-full rounded-lg bg-white shadow px-3 py-3 text-sm mb-3 outline-none focus:ring-2 focus:ring-orange-500"
+        className="w-full rounded-lg bg-white shadow px-3 py-3 text-sm mb-4 outline-none focus:ring-2 focus:ring-orange-500"
       />
-
-      <div className="flex gap-2 mb-4">
-        {FILTERS.map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`px-3 py-1 rounded-full text-xs capitalize ${
-              filter === f ? 'bg-slate-900 text-white' : 'bg-white text-slate-600'
-            }`}
-          >
-            {f}
-          </button>
-        ))}
-      </div>
 
       {isLoading && <p>Loading...</p>}
       {error && <p role="alert" className="text-red-600">{error}</p>}
-      {!isLoading && !error && visible.length === 0 && (
+      {!isLoading && !error && interns.length === 0 && (
         <p className="text-sm text-slate-500">No interns found.</p>
       )}
 
       <ul className="flex flex-col gap-3">
-        {visible.map((intern) => (
+        {interns.map((intern) => (
           <li
             key={intern.id}
             className="group bg-white rounded-xl shadow p-4 flex flex-col md:flex-row md:items-center gap-3"
           >
             <div className="flex items-center gap-3 flex-1">
-              {intern.avatarUrl ? (
-                <img src={intern.avatarUrl} alt="" className="h-10 w-10 rounded-lg object-cover" />
-              ) : (
-                <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center font-semibold">
-                  {intern.name[0]}
-                </div>
-              )}
+              <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center font-semibold">
+                {intern.name[0]}
+              </div>
               <div>
                 <p className="font-semibold text-slate-900">{intern.name}</p>
                 <p className="text-xs text-slate-500">{intern.email}</p>
                 {intern.signedInAt && (
-                <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-500">
                     In since{' '}
                     {new Date(intern.signedInAt).toLocaleTimeString([], {
-                    hour: 'numeric',
-                    minute: '2-digit',
+                      hour: 'numeric',
+                      minute: '2-digit',
                     })}
-                </p>
+                  </p>
                 )}
               </div>
             </div>
@@ -129,35 +101,52 @@ export default function TodayAttendancePage() {
               >
                 View Profile
               </button>
-              
-             {canMark && (
-              <div className="flex gap-2 md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100 transition-opacity">
-                {/* assumed: Absent has no onClick because the API has no absent endpoint yet */}
-                <button
-                  className="px-3 py-2 rounded-lg bg-red-50 text-xs font-semibold text-red-700"
-                >
-                  Absent
-                </button>
-                {intern.status === 'here' && (
-                  <button
-                    onClick={() => setSelected({ intern, action: 'sign-out' })}
-                    className="px-3 py-2 rounded-lg bg-blue-50 text-xs font-semibold text-slate-800"
-                  >
-                    Sign Out
+              {canMark && (
+                <div className="flex gap-2 md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100 transition-opacity">
+                  {/* assumed: Absent has no onClick because the API has no absent endpoint yet */}
+                  <button className="px-3 py-2 rounded-lg bg-red-50 text-xs font-semibold text-red-700">
+                    Absent
                   </button>
-                )}
-                <button
-                  onClick={() => setSelected({ intern, action: 'sign-in' })}
-                  className="px-3 py-2 rounded-lg bg-green-600 text-xs font-semibold text-white"
-                >
-                  Present
-                </button>
-              </div>
-            )}
+                  {intern.status === 'here' && (
+                    <button
+                      onClick={() => setSelected({ intern, action: 'sign-out' })}
+                      className="px-3 py-2 rounded-lg bg-blue-50 text-xs font-semibold text-slate-800"
+                    >
+                      Sign Out
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setSelected({ intern, action: 'sign-in' })}
+                    className="px-3 py-2 rounded-lg bg-green-600 text-xs font-semibold text-white"
+                  >
+                    Present
+                  </button>
+                </div>
+              )}
             </div>
           </li>
         ))}
       </ul>
+
+      <div className="flex items-center justify-between mt-6">
+        <button
+          onClick={() => setPage((p) => Math.max(p - 1, 1))}
+          disabled={page === 1}
+          className="px-4 py-2 rounded-lg bg-white shadow text-sm font-semibold disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <p className="text-xs text-slate-500">
+          Page {page} of {totalPages}
+        </p>
+        <button
+          onClick={() => setPage((p) => p + 1)}
+          disabled={page >= totalPages} // 3
+          className="px-4 py-2 rounded-lg bg-white shadow text-sm font-semibold disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
 
       {selected && (
         <PinDialog

@@ -3,6 +3,7 @@ import { useState } from 'react';
 const ENDPOINTS = {
   'sign-in': '/api/v1/attendance/sign-in', // assumed: relative base path
   'sign-out': '/api/v1/attendance/sign-out', // assumed: relative base path
+  absent: '/api/v1/attendance/absent', // assumed
 };
 
 export function useAttendanceAction() {

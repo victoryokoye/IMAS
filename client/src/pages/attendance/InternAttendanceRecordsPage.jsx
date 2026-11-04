@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { uesParams, useNavigate } from 'react-router-dom'; // 1
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAttendanceHistory } from '../../hooks/attendance/useAttendanceHistory';
+
+const LIMIT = 10; // assumed: records per page, spec default is 10
 
 function formatTime(value) {
   if (!value) return '-';
@@ -8,10 +10,17 @@ function formatTime(value) {
 }
 
 export default function InternAttendanceRecordsPage() {
-  const { internId } = uesParams(); // 1
+  const { internId } = useParams();
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
-  const { records, isLoading, error } = useAttendanceHistory({ from, to, internId });
+  const [page, setPage] = useState(1);
+  const { records, totalPages, isLoading, error } = useAttendanceHistory({
+    from,
+    to,
+    internId,
+    page,
+    limit: LIMIT,
+  });
   const navigate = useNavigate();
 
   return (
@@ -22,9 +31,7 @@ export default function InternAttendanceRecordsPage() {
       >
         ← Back to History
       </button>
-      <h1 className="text-2xl font-bold text-slate-900 mb-1">
-        Intern Attendance
-      </h1>
+      <h1 className="text-2xl font-bold text-slate-900 mb-1">Intern Attendance</h1>
       <p className="text-sm text-slate-500 mb-6">Filter records by date.</p>
 
       <div className="flex flex-wrap gap-3 mb-6">
@@ -33,7 +40,10 @@ export default function InternAttendanceRecordsPage() {
           <input
             type="date"
             value={from}
-            onChange={(e) => setFrom(e.target.value)}
+            onChange={(e) => {
+              setFrom(e.target.value);
+              setPage(1);
+            }}
             className="block mt-1 rounded-lg bg-white shadow px-3 py-2 text-sm"
           />
         </label>
@@ -42,7 +52,10 @@ export default function InternAttendanceRecordsPage() {
           <input
             type="date"
             value={to}
-            onChange={(e) => setTo(e.target.value)}
+            onChange={(e) => {
+              setTo(e.target.value);
+              setPage(1);
+            }}
             className="block mt-1 rounded-lg bg-white shadow px-3 py-2 text-sm"
           />
         </label>
@@ -66,10 +79,10 @@ export default function InternAttendanceRecordsPage() {
               </tr>
             </thead>
             <tbody>
-              {records.map((r) => ( // 2
+              {records.map((r) => (
                 <tr
-                  key={r.id} // 3
-                  onClick={() => navigate(`/attendance/${r.id}`)} // 3
+                  key={r.id}
+                  onClick={() => navigate(`/attendance/${r.id}`)}
                   className="border-t cursor-pointer hover:bg-slate-50"
                 >
                   <td className="px-4 py-3">{new Date(r.date).toLocaleDateString()}</td>
@@ -82,6 +95,26 @@ export default function InternAttendanceRecordsPage() {
           </table>
         </div>
       )}
+
+      <div className="flex items-center justify-between mt-6">
+        <button
+          onClick={() => setPage((p) => Math.max(p - 1, 1))}
+          disabled={page === 1}
+          className="px-4 py-2 rounded-lg bg-white shadow text-sm font-semibold disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <p className="text-xs text-slate-500">
+          Page {page} of {totalPages}
+        </p>
+        <button
+          onClick={() => setPage((p) => p + 1)}
+          disabled={page >= totalPages}
+          className="px-4 py-2 rounded-lg bg-white shadow text-sm font-semibold disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }
