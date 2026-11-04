@@ -9,11 +9,11 @@ export default function LoginPage() {
   const { login, isLoading, error } = useLogin();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || '/';
+  const from = location.state?.from?.pathname || '/'; // assumed: default landing page
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const ok = await login({ email: identifier, password });
+    const ok = await login({ email: identifier, password }); // assumed: backend field name
     if (ok) navigate(from, { replace: true });
   }
 
@@ -28,7 +28,8 @@ export default function LoginPage() {
         className="w-full max-w-sm bg-white rounded-xl shadow-lg p-6"
       >
         <div className="flex flex-col items-center text-center mb-6">
-          <img src="/logo.png" alt="IMAS logo" className="h-12 w-12 mb-2" />
+          <img src="/logo.png" alt="IMAS logo" className="h-12 w-12 mb-2" /> {/* assumed: logo path, logo not available yet */}
+
           <span className="text-[10px] tracking-wider bg-blue-50 text-slate-500 px-2 py-0.5 rounded">
             ADMINISTRATOR PORTAL
           </span>
@@ -47,7 +48,7 @@ export default function LoginPage() {
           type="text"
           value={identifier}
           onChange={(e) => setIdentifier(e.target.value)}
-          placeholder="admin@imas.internal"
+          placeholder="admin@imas.com"
           autoComplete="username"
           required
           className="w-full rounded-lg bg-blue-50 px-3 py-3 text-sm mb-4 outline-none focus:ring-2 focus:ring-orange-500"

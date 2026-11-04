@@ -4,7 +4,8 @@ import { useAuthStore } from '../../stores/auth.store';
 import { useTodayAttendance } from '../../hooks/attendance/useTodayAttendance';
 import PinDialog from './PinDialog';
 
-const CAN_MARK = ['admin', 'intern_supervisor'];
+// const CAN_MARK = ['admin', 'intern_supervisor'];
+const CAN_MARK = ['ADMINISTRATOR', 'SUPERVISOR', 'INTERN_COORDINATOR'];
 const FILTERS = ['all', 'here', 'away'];
 
 export default function TodayAttendancePage() {
@@ -84,7 +85,7 @@ export default function TodayAttendancePage() {
         {visible.map((intern) => (
           <li
             key={intern.id}
-            className="bg-white rounded-xl shadow p-4 flex flex-col md:flex-row md:items-center gap-3"
+            className="group bg-white rounded-xl shadow p-4 flex flex-col md:flex-row md:items-center gap-3"
           >
             <div className="flex items-center gap-3 flex-1">
               {intern.avatarUrl ? (
@@ -128,22 +129,31 @@ export default function TodayAttendancePage() {
               >
                 View Profile
               </button>
-              {canMark && (
-                <>
+              
+             {canMark && (
+              <div className="flex gap-2 md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100 transition-opacity">
+                {/* assumed: Absent has no onClick because the API has no absent endpoint yet */}
+                <button
+                  className="px-3 py-2 rounded-lg bg-red-50 text-xs font-semibold text-red-700"
+                >
+                  Absent
+                </button>
+                {intern.status === 'here' && (
                   <button
                     onClick={() => setSelected({ intern, action: 'sign-out' })}
-                    className="px-3 py-2 rounded-lg bg-red-50 text-xs font-semibold text-red-700"
+                    className="px-3 py-2 rounded-lg bg-blue-50 text-xs font-semibold text-slate-800"
                   >
-                    Absent
+                    Sign Out
                   </button>
-                  <button
-                    onClick={() => setSelected({ intern, action: 'sign-in' })} // 3
-                    className="px-3 py-2 rounded-lg bg-green-600 text-xs font-semibold text-white"
-                  >
-                    Present-  
-                  </button>
-                </>
-              )}
+                )}
+                <button
+                  onClick={() => setSelected({ intern, action: 'sign-in' })}
+                  className="px-3 py-2 rounded-lg bg-green-600 text-xs font-semibold text-white"
+                >
+                  Present
+                </button>
+              </div>
+            )}
             </div>
           </li>
         ))}
