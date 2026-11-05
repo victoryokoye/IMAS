@@ -8,8 +8,8 @@ import {
   setInternPin,
   verifyInternPin,
 } from "./intern.controller";
-import { authMiddleware } from "../middleware/auth.middleware";
-import { authorizeRoles } from "../middleware/role.middleware";
+import { authMiddleware } from "../middlewares/auth.middleware";
+import { authorizeRoles } from "../middlewares/role.middleware";
 
 const router: Router = Router();
 
