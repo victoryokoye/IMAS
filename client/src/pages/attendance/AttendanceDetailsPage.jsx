@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/auth.store";
-import { useAttendanceRecord } from "../../hooks/attendance/useAttendaceRecords";
+import { useAttendanceRecord } from "../../hooks/attendance/useAttendaceRecord";
 
 const CAN_EDIT = ["ADMINISTRATOR"]; // from the spec: only administrators correct or delete
 
