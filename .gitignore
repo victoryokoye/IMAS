@@ -1,3 +1,7 @@
+
+.env*
+w.devchecklist.task1.md
+hash.js
 # Dependencies
 node_modules/
 **/node_modules/

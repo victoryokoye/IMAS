@@ -44,7 +44,7 @@ model Staff {
   status             StaffStatus  @default(ACTIVE)
 
   createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @default(now())
+  updatedAt          DateTime    
 
   // Staff member who signed an intern in
   attendanceSignIns  Attendance[] @relation("AttendanceSignedInBy")
@@ -52,7 +52,10 @@ model Staff {
   // Staff member who signed an intern out
   attendanceSignOuts Attendance[] @relation("AttendanceSignedOutBy")
 
-  @@map("staff")
+  // staff member who forgot password
+  passwordResetTokens PasswordResetToken[]
+
+  @@map("staffs")
 }
 
 // ============================================================
@@ -64,7 +67,7 @@ model Intern {
   phone        String
   email        String          @unique
   group        String
-  techArea     String
+  department   String
   course       String?
   skills       String?
   startDate    DateTime
@@ -73,7 +76,7 @@ model Intern {
 
   // Stores bcrypt hash of the 4-digit PIN.
   // Never store the plaintext PIN.
-  pin          String
+  pin          String?
 
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @default(now())
@@ -81,29 +84,29 @@ model Intern {
   attendance   Attendance[]
   projectLinks ProjectIntern[]
 
-  @@map("intern")
+  @@map("interns")
 }
 
 // ============================================================
 // PROJECT
 // ============================================================
 model Project {
-  id          Uuid            @id @default(uuid())
+  id          Uuid          @id @default(uuid())
   name        String
   description String?
-  techArea    String
-  department  String
-  status      ProjectStatus   @default(OPEN)
+  department  String?
+  status      ProjectStatus @default(OPEN)
   startDate   DateTime
   endDate     DateTime
 
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @default(now())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now())
 
   interns     ProjectIntern[]
 
-  @@map("project")
+  @@map("projects")
 }
+
 
 // ============================================================
 // PROJECT <-> INTERN JUNCTION TABLE
@@ -113,13 +116,10 @@ model ProjectIntern {
   projectId Uuid
   internId  Uuid
 
-  project   Project @relation(fields:[projectId], references:[id], onDelete: Cascade)
-  intern    Intern  @relation(fields:[internId], references:[id], onDelete: Cascade)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  intern    Intern  @relation(fields: [internId], references: [id], onDelete: Cascade)
 
-  // Prevent the same intern from being assigned
-  // to the same project more than once.
   @@unique([projectId, internId])
-
   @@index([projectId])
   @@index([internId])
 
@@ -164,4 +164,17 @@ model Attendance {
   @@index([signedOutBy])
 
   @@map("attendance")
+}
+
+model PasswordResetToken {
+  id        Uuid     @id @default(uuid())
+  token     String   @unique
+  staffId   Uuid
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  staff     Staff    @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@index([staffId])
+  @@map("password_reset_tokens")
 }
