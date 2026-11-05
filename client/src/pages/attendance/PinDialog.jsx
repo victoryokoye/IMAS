@@ -5,7 +5,9 @@ export default function PinDialog({ intern, action, onClose, onDone }) {
   const [pin, setPin] = useState('');
   const [success, setSuccess] = useState(false);
   const { submit, isLoading, error } = useAttendanceAction();
-  const label = action === 'sign-in' ? 'Sign in' : 'Sign out';
+  const LABELS = { 'sign-in': 'Sign in', 'sign-out': 'Sign out', absent: 'Mark absent' };
+  const label = LABELS[action];
+  const needsPin = action !== 'absent';
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -33,7 +35,23 @@ export default function PinDialog({ intern, action, onClose, onDone }) {
             <h2 className="text-lg font-bold text-slate-900 mb-1">
               {label}: {intern.name}
             </h2>
-            <p className="text-sm text-slate-500 mb-4">Enter the intern's PIN.</p>
+            {needsPin ? (
+            <>
+              <p className="text-sm text-slate-500 mb-4">Enter the intern's PIN.</p>
+              <input
+                type="password"
+                inputMode="numeric"
+                value={pin}
+                onChange={(e) => setPin(e.target.value)}
+                placeholder="PIN"
+                autoFocus
+                required
+                className="w-full rounded-lg bg-blue-50 px-3 py-3 text-sm mb-3 outline-none focus:ring-2 focus:ring-orange-500"
+              />
+            </>
+          ) : (
+            <p className="text-sm text-slate-500 mb-4">Mark this intern as absent today?</p>
+          )}
 
             <input
               type="password"
