@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'c8beb30a7b1b03d2a769301ea23c27ef06202aa778eebd990def63b428b8f230'>;
+  StorageHashBase<'0fd3674002684934e86f3535aba8e23bba7ac4e07335dc51b8bba3cd8b38b207'>;
 export type ExecutionHash =
   ExecutionHashBase<'b1238a28cd4fa220f18f9be332f0aff34738087a7eec3a61e3b9748e33cb46b9'>;
 export type ProfileHash =
@@ -271,9 +271,9 @@ export type FieldOutputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly PasswordResetToken: {
-      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly token: CodecTypes['pg/text@1']['output'];
-      readonly staffId: CodecTypes['pg/text@1']['output'];
+      readonly staffId: CodecTypes['pg/uuid@1']['output'];
       readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
@@ -337,9 +337,9 @@ export type FieldInputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly PasswordResetToken: {
-      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly token: CodecTypes['pg/text@1']['input'];
-      readonly staffId: CodecTypes['pg/text@1']['input'];
+      readonly staffId: CodecTypes['pg/uuid@1']['input'];
       readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
@@ -405,8 +405,8 @@ export type StorageColumnTypes = {
     readonly password_reset_tokens: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-      readonly id: CodecTypes['pg/text@1']['output'];
-      readonly staffId: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly staffId: CodecTypes['pg/uuid@1']['output'];
       readonly token: CodecTypes['pg/text@1']['output'];
     };
     readonly project_intern: {
@@ -471,8 +471,8 @@ export type StorageColumnInputTypes = {
     readonly password_reset_tokens: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
-      readonly id: CodecTypes['pg/text@1']['input'];
-      readonly staffId: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly staffId: CodecTypes['pg/uuid@1']['input'];
       readonly token: CodecTypes['pg/text@1']['input'];
     };
     readonly project_intern: {
@@ -578,9 +578,9 @@ export namespace Models {
     readonly [RelationKeys]?: 'intern' | 'signInStaff' | 'signOutStaff';
   };
   export type public_PasswordResetToken = {
-    id: CodecTypes['pg/text@1']['output'];
+    id: CodecTypes['pg/uuid@1']['output'];
     token: CodecTypes['pg/text@1']['output'];
-    staffId: CodecTypes['pg/text@1']['output'];
+    staffId: CodecTypes['pg/uuid@1']['output'];
     expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     staff: public_Staff;
@@ -830,8 +830,8 @@ type ContractBase = Omit<
             readonly password_reset_tokens: {
               columns: {
                 readonly id: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
                   readonly nullable: false;
                 };
                 readonly token: {
@@ -840,8 +840,8 @@ type ContractBase = Omit<
                   readonly nullable: false;
                 };
                 readonly staffId: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
                   readonly nullable: false;
                 };
                 readonly expiresAt: {
@@ -1342,7 +1342,7 @@ type ContractBase = Omit<
             readonly fields: {
               readonly id: {
                 readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
               };
               readonly token: {
                 readonly nullable: false;
@@ -1350,7 +1350,7 @@ type ContractBase = Omit<
               };
               readonly staffId: {
                 readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
               };
               readonly expiresAt: {
                 readonly nullable: false;

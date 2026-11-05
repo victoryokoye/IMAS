@@ -9,6 +9,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/auth", authRoutes);
-app.use("interns", internRoutes);
+app.use("/interns", internRoutes);
 
 export default app;

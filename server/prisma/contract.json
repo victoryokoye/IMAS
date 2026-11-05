@@ -489,14 +489,14 @@
               "id": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/text@1",
+                  "codecId": "pg/uuid@1",
                   "kind": "scalar"
                 }
               },
               "staffId": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/text@1",
+                  "codecId": "pg/uuid@1",
                   "kind": "scalar"
                 }
               },
@@ -1222,13 +1222,13 @@
                   "nullable": false
                 },
                 "id": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
                   "nullable": false
                 },
                 "staffId": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
                   "nullable": false
                 },
                 "token": {
@@ -1589,7 +1589,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "c8beb30a7b1b03d2a769301ea23c27ef06202aa778eebd990def63b428b8f230"
+    "storageHash": "0fd3674002684934e86f3535aba8e23bba7ac4e07335dc51b8bba3cd8b38b207"
   },
   "execution": {
     "executionHash": "b1238a28cd4fa220f18f9be332f0aff34738087a7eec3a61e3b9748e33cb46b9",

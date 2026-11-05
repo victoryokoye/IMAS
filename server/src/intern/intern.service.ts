@@ -1,11 +1,13 @@
 import bcrypt from "bcrypt";
+import { or } from "@prisma/orm-postgres/orm-client";
+
 import type {
   CreateInternInput,
   UpdateInternInput,
   UpdateInternStatusInput,
   SetInternPinInput,
 } from "./intern.schema";
-import type { Intern } from "./intern.types";
+import type { Intern, InternSortField, SortOrder } from "./intern.types";
 import { db } from "../../prisma/db";
 
 // Create intern
@@ -38,8 +40,53 @@ export const createIntern = async (
 };
 
 // Get all interns
-export const getAllInterns = async (): Promise<Intern[]> => {
-  return db.orm.public.Intern.all();
+export const getAllInterns = async (
+  search?: string,
+  sortBy: InternSortField = "createdAt",
+  order: SortOrder = "desc",
+): Promise<Intern[]> => {
+  const query = () =>
+    search
+      ? db.orm.public.Intern.where((intern) =>
+          or(
+            intern.name.ilike(`%${search}%`),
+            intern.email.ilike(`%${search}%`),
+            intern.phone.ilike(`%${search}%`),
+            intern.group.ilike(`%${search}%`),
+            intern.techArea.ilike(`%${search}%`),
+          ),
+        )
+      : db.orm.public.Intern;
+
+  switch (sortBy) {
+    case "name":
+      return query()
+        .orderBy((intern) =>
+          order === "asc" ? intern.name.asc() : intern.name.desc(),
+        )
+        .all();
+
+    case "startDate":
+      return query()
+        .orderBy((intern) =>
+          order === "asc" ? intern.startDate.asc() : intern.startDate.desc(),
+        )
+        .all();
+
+    case "endDate":
+      return query()
+        .orderBy((intern) =>
+          order === "asc" ? intern.endDate.asc() : intern.endDate.desc(),
+        )
+        .all();
+
+    default:
+      return query()
+        .orderBy((intern) =>
+          order === "asc" ? intern.createdAt.asc() : intern.createdAt.desc(),
+        )
+        .all();
+  }
 };
 
 // Get a single intern

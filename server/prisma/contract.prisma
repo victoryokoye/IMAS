@@ -170,15 +170,14 @@ model Attendance {
 }
 
 model PasswordResetToken {
-  id        String   @id @default(uuid())
+  id        Uuid     @id @default(uuid())
   token     String   @unique
-  staffId   String
+  staffId   Uuid
   expiresAt DateTime
   createdAt DateTime @default(now())
 
   staff     Staff    @relation(fields: [staffId], references: [id], onDelete: Cascade)
 
   @@index([staffId])
-
   @@map("password_reset_tokens")
 }

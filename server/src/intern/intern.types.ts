@@ -28,3 +28,7 @@ export interface InternPaginationMeta {
   total: number;
   totalPages: number;
 }
+
+export type InternSortField = "name" | "createdAt" | "startDate" | "endDate";
+
+export type SortOrder = "asc" | "desc";

@@ -36,6 +36,14 @@ export const listInternsQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(10),
 });
 
+export const internQuerySchema = z.object({
+  search: z.string().trim().optional(),
+  sortBy: z
+    .enum(["name", "createdAt", "startDate", "endDate"])
+    .default("createdAt"),
+  order: z.enum(["asc", "desc"]).default("desc"),
+});
+
 export type CreateInternInput = z.infer<typeof createInternSchema>;
 export type UpdateInternInput = z.infer<typeof updateInternSchema>;
 export type UpdateInternStatusInput = z.infer<typeof updateInternStatusSchema>;
