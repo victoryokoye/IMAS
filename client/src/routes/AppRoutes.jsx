@@ -1,10 +1,10 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
 // import ProtectedRoute from "./ProtectedRoute";
-// import AuthLayout from "../layouts/AuthLayout";
+import AuthLayout from "../layouts/AuthLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
 
-// import LoginPage from "../pages/auth/LoginPage";
+import LoginPage from "../pages/auth/LoginPage";
 // import DashboardPage from "../pages/dashboard/DashboardPage";
 
 // import InternListPage from "../pages/interns/InternListPage";
@@ -38,9 +38,9 @@ export default function AppRoutes() {
   return (
     <Routes>
       {/* Public */}
-      {/* <Route element={<AuthLayout />}>
+      <Route element={<AuthLayout />}>
         <Route path="/login" element={<LoginPage />} />
-      </Route> */}
+      </Route>
 
       {/* Authenticated (any role) */}
       {/* <Route element={<ProtectedRoute />}> */}

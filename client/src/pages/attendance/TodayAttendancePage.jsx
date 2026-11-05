@@ -1,15 +1,15 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../stores/auth.store';
-import { useTodayAttendance } from '../../hooks/attendance/useTodayAttendance';
-import PinDialog from './PinDialog';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../stores/auth.store";
+import { useTodayAttendance } from "../../hooks/attendance/useTodayAttendance";
+import PinDialog from "./PinDialouge";
 
-const CAN_MARK = ['ADMINISTRATOR', 'SUPERVISOR', 'INTERN_COORDINATOR'];
+const CAN_MARK = ["ADMINISTRATOR", "SUPERVISOR", "INTERN_COORDINATOR"];
 const LIMIT = 10; // assumed: records per page, spec default is 10
 
 export default function TodayAttendancePage() {
   const staff = useAuthStore((s) => s.staff);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const { interns, stats, totalPages, isLoading, error, refetch } =
     useTodayAttendance({ search, page, limit: LIMIT });
@@ -21,8 +21,12 @@ export default function TodayAttendancePage() {
   return (
     <div className="p-4 md:p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Attendance Monitor</h1>
-        <p className="text-sm text-slate-500">See who is here today and mark attendance.</p>
+        <h1 className="text-2xl font-bold text-slate-900">
+          Attendance Monitor
+        </h1>
+        <p className="text-sm text-slate-500">
+          See who is here today and mark attendance.
+        </p>
       </div>
 
       <div className="grid grid-cols-3 gap-3 mb-6">
@@ -52,7 +56,11 @@ export default function TodayAttendancePage() {
       />
 
       {isLoading && <p>Loading...</p>}
-      {error && <p role="alert" className="text-red-600">{error}</p>}
+      {error && (
+        <p role="alert" className="text-red-600">
+          {error}
+        </p>
+      )}
       {!isLoading && !error && interns.length === 0 && (
         <p className="text-sm text-slate-500">No interns found.</p>
       )}
@@ -72,10 +80,10 @@ export default function TodayAttendancePage() {
                 <p className="text-xs text-slate-500">{intern.email}</p>
                 {intern.signedInAt && (
                   <p className="text-xs text-slate-500">
-                    In since{' '}
+                    In since{" "}
                     {new Date(intern.signedInAt).toLocaleTimeString([], {
-                      hour: 'numeric',
-                      minute: '2-digit',
+                      hour: "numeric",
+                      minute: "2-digit",
                     })}
                   </p>
                 )}
@@ -86,12 +94,12 @@ export default function TodayAttendancePage() {
 
             <span
               className={`text-xs font-semibold px-2 py-1 rounded w-fit ${
-                intern.status === 'here'
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-slate-100 text-slate-600'
+                intern.status === "here"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-slate-100 text-slate-600"
               }`}
             >
-              {intern.status === 'here' ? 'Here' : 'Away'}
+              {intern.status === "here" ? "Here" : "Away"}
             </span>
 
             <div className="flex gap-2">
@@ -107,16 +115,18 @@ export default function TodayAttendancePage() {
                   <button className="px-3 py-2 rounded-lg bg-red-50 text-xs font-semibold text-red-700">
                     Absent
                   </button>
-                  {intern.status === 'here' && (
+                  {intern.status === "here" && (
                     <button
-                      onClick={() => setSelected({ intern, action: 'sign-out' })}
+                      onClick={() =>
+                        setSelected({ intern, action: "sign-out" })
+                      }
                       className="px-3 py-2 rounded-lg bg-blue-50 text-xs font-semibold text-slate-800"
                     >
                       Sign Out
                     </button>
                   )}
                   <button
-                    onClick={() => setSelected({ intern, action: 'sign-in' })}
+                    onClick={() => setSelected({ intern, action: "sign-in" })}
                     className="px-3 py-2 rounded-lg bg-green-600 text-xs font-semibold text-white"
                   >
                     Present
