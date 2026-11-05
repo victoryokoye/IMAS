@@ -5,7 +5,7 @@ import AuthLayout from "../layouts/AuthLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
 
 import LoginPage from "../pages/auth/LoginPage";
-// import DashboardPage from "../pages/dashboard/DashboardPage";
+import DashboardPage from "../pages/dashboard/DashboardPage";
 
 // import InternListPage from "../pages/interns/InternListPage";
 // import InternCreatePage from "../pages/interns/InternCreatePage";
@@ -20,10 +20,10 @@ import LoginPage from "../pages/auth/LoginPage";
 // import ProjectDetailPage from "../pages/projects/ProjectDetailPage";
 // import ProjectEditPage from "../pages/projects/ProjectEditPage";
 
-// import StaffListPage from "../pages/staff/StaffListPage";
-// import StaffCreatePage from "../pages/staff/StaffCreatePage";
-// import StaffDetailPage from "../pages/staff/StaffDetailPage";
-// import StaffEditPage from "../pages/staff/StaffEditPage";
+import StaffListPage from "../pages/staff/StaffListPage";
+import StaffCreatePage from "../pages/staff/StaffCreatePage";
+import StaffDetailsPage from "../pages/staff/StaffDetailsPage";
+import StaffEditPage from "../pages/staff/StaffEditPage";
 
 import ForbiddenPage from "../pages/system/ForbiddenPage";
 import NotFoundPage from "../pages/system/NotFoundPage";
@@ -46,7 +46,14 @@ export default function AppRoutes() {
       {/* <Route element={<ProtectedRoute />}> */}
       <Route element={<DashboardLayout />}>
         <Route index element={<Navigate to="/dashboard" replace />} />
-        {/* <Route path="dashboard" element={<DashboardPage />} /> */}
+        <Route path="staff">
+          {" "}
+          <Route index element={<StaffListPage />} />{" "}
+          <Route path="new" element={<StaffCreatePage />} />{" "}
+          <Route path=":id/edit" element={<StaffEditPage />} />{" "}
+          <Route path=":id" element={<StaffDetailsPage />} />{" "}
+        </Route>
+        <Route path="dashboard" element={<DashboardPage />} />
         {/* 
         <Route path="interns">
           <Route index element={<InternListPage />} />
