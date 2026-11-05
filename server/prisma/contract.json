@@ -298,6 +298,13 @@
                   "kind": "scalar"
                 }
               },
+              "department": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "email": {
                 "nullable": false,
                 "type": {
@@ -374,13 +381,6 @@
                   "plane": "domain"
                 }
               },
-              "techArea": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
               "updatedAt": {
                 "nullable": false,
                 "type": {
@@ -429,6 +429,9 @@
                 "createdAt": {
                   "column": "createdAt"
                 },
+                "department": {
+                  "column": "department"
+                },
                 "email": {
                   "column": "email"
                 },
@@ -458,9 +461,6 @@
                 },
                 "status": {
                   "column": "status"
-                },
-                "techArea": {
-                  "column": "techArea"
                 },
                 "updatedAt": {
                   "column": "updatedAt"
@@ -558,7 +558,7 @@
                 }
               },
               "department": {
-                "nullable": false,
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -612,13 +612,6 @@
                   "plane": "domain"
                 }
               },
-              "techArea": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
               "updatedAt": {
                 "nullable": false,
                 "type": {
@@ -669,9 +662,6 @@
                 },
                 "status": {
                   "column": "status"
-                },
-                "techArea": {
-                  "column": "techArea"
                 },
                 "updatedAt": {
                   "column": "updatedAt"
@@ -1115,6 +1105,11 @@
                   "nativeType": "timestamptz",
                   "nullable": false
                 },
+                "department": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
                 "email": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -1174,11 +1169,6 @@
                     "namespaceId": "public",
                     "plane": "storage"
                   }
-                },
-                "techArea": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": false
                 },
                 "updatedAt": {
                   "codecId": "pg/timestamptz-temporal@1",
@@ -1386,7 +1376,7 @@
                 "department": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
-                  "nullable": false
+                  "nullable": true
                 },
                 "description": {
                   "codecId": "pg/text@1",
@@ -1427,11 +1417,6 @@
                     "namespaceId": "public",
                     "plane": "storage"
                   }
-                },
-                "techArea": {
-                  "codecId": "pg/text@1",
-                  "nativeType": "text",
-                  "nullable": false
                 },
                 "updatedAt": {
                   "codecId": "pg/timestamptz-temporal@1",
@@ -1589,7 +1574,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "0fd3674002684934e86f3535aba8e23bba7ac4e07335dc51b8bba3cd8b38b207"
+    "storageHash": "7d9f05d318a83d90a57cd0c9faae674201ca625361470a22a062bef73ea757ba"
   },
   "execution": {
     "executionHash": "b1238a28cd4fa220f18f9be332f0aff34738087a7eec3a61e3b9748e33cb46b9",

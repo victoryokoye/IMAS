@@ -1,11 +1,14 @@
 import bcrypt from "bcrypt";
+import { or } from "@prisma/orm-postgres/orm-client";
+import type { SortOrder } from "../types/express/index";
+
 import type {
   CreateStaffInput,
   UpdateStaffInput,
   UpdateStaffRoleInput,
   UpdateStaffStatusInput,
 } from "./staff.schema";
-import type { Staff } from "./staff.types";
+import type { Staff, StaffSortField } from "./staff.types";
 import { db } from "../../prisma/db";
 
 // Create staff
@@ -30,8 +33,40 @@ export const createStaff = async (data: CreateStaffInput): Promise<Staff> => {
 };
 
 // Get all staff
-export const getAllStaff = async (): Promise<Staff[]> => {
-  return db.orm.public.Staff.all();
+export const getAllStaff = async (
+  search?: string,
+  sortBy: StaffSortField = "createdAt",
+  order: SortOrder = "desc",
+): Promise<Staff[]> => {
+  const query = () =>
+    search
+      ? db.orm.public.Staff.where((staff) =>
+          or(staff.name.ilike(`%${search}%`), staff.email.ilike(`%${search}%`)),
+        )
+      : db.orm.public.Staff;
+
+  switch (sortBy) {
+    case "name":
+      return query()
+        .orderBy((staff) =>
+          order === "asc" ? staff.name.asc() : staff.name.desc(),
+        )
+        .all();
+
+    case "updatedAt":
+      return query()
+        .orderBy((staff) =>
+          order === "asc" ? staff.updatedAt.asc() : staff.updatedAt.desc(),
+        )
+        .all();
+
+    default:
+      return query()
+        .orderBy((staff) =>
+          order === "asc" ? staff.createdAt.asc() : staff.createdAt.desc(),
+        )
+        .all();
+  }
 };
 
 // Get a single staff member

@@ -6,7 +6,7 @@ export interface Intern {
   phone: string;
   email: string;
   group: string;
-  techArea: string;
+  department: string;
   course: string | null;
   skills: string | null;
   startDate: Temporal.Instant;

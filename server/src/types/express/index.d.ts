@@ -11,4 +11,6 @@ declare global {
   }
 }
 
+export type SortOrder = "asc" | "desc";
+
 export {};

@@ -27,7 +27,7 @@ export const createIntern = async (
     phone: data.phone,
     email: data.email,
     group: data.group,
-    techArea: data.techArea,
+    department: data.techArea,
     course: data.course ?? null,
     skills: JSON.stringify(data.skills),
     startDate: Temporal.Instant.fromEpochMilliseconds(
@@ -53,7 +53,7 @@ export const getAllInterns = async (
             intern.email.ilike(`%${search}%`),
             intern.phone.ilike(`%${search}%`),
             intern.group.ilike(`%${search}%`),
-            intern.techArea.ilike(`%${search}%`),
+            intern.department.ilike(`%${search}%`),
           ),
         )
       : db.orm.public.Intern;
@@ -110,7 +110,7 @@ export const updateIntern = async (
     phone: data.phone,
     email: data.email,
     group: data.group,
-    techArea: data.techArea,
+    department: data.techArea,
     course: data.course ?? null,
     skills: JSON.stringify(data.skills),
     startDate: Temporal.Instant.fromEpochMilliseconds(

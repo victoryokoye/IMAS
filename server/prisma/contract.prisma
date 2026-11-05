@@ -67,7 +67,7 @@ model Intern {
   phone        String
   email        String          @unique
   group        String
-  techArea     String
+  department   String
   course       String?
   skills       String?
   startDate    DateTime
@@ -91,22 +91,22 @@ model Intern {
 // PROJECT
 // ============================================================
 model Project {
-  id          Uuid            @id @default(uuid())
+  id          Uuid          @id @default(uuid())
   name        String
   description String?
-  techArea    String
-  department  String
-  status      ProjectStatus   @default(OPEN)
+  department  String?
+  status      ProjectStatus @default(OPEN)
   startDate   DateTime
   endDate     DateTime
 
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @default(now())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now())
 
   interns     ProjectIntern[]
 
   @@map("projects")
 }
+
 
 // ============================================================
 // PROJECT <-> INTERN JUNCTION TABLE
@@ -116,13 +116,10 @@ model ProjectIntern {
   projectId Uuid
   internId  Uuid
 
-  project   Project @relation(fields:[projectId], references:[id], onDelete: Cascade)
-  intern    Intern  @relation(fields:[internId], references:[id], onDelete: Cascade)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  intern    Intern  @relation(fields: [internId], references: [id], onDelete: Cascade)
 
-  // Prevent the same intern from being assigned
-  // to the same project more than once.
   @@unique([projectId, internId])
-
   @@index([projectId])
   @@index([internId])
 

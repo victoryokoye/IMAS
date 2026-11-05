@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'0fd3674002684934e86f3535aba8e23bba7ac4e07335dc51b8bba3cd8b38b207'>;
+  StorageHashBase<'7d9f05d318a83d90a57cd0c9faae674201ca625361470a22a062bef73ea757ba'>;
 export type ExecutionHash =
   ExecutionHashBase<'b1238a28cd4fa220f18f9be332f0aff34738087a7eec3a61e3b9748e33cb46b9'>;
 export type ProfileHash =
@@ -260,7 +260,7 @@ export type FieldOutputTypes = {
       readonly phone: CodecTypes['pg/text@1']['output'];
       readonly email: CodecTypes['pg/text@1']['output'];
       readonly group: CodecTypes['pg/text@1']['output'];
-      readonly techArea: CodecTypes['pg/text@1']['output'];
+      readonly department: CodecTypes['pg/text@1']['output'];
       readonly course: CodecTypes['pg/text@1']['output'] | null;
       readonly skills: CodecTypes['pg/text@1']['output'] | null;
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -281,8 +281,7 @@ export type FieldOutputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly description: CodecTypes['pg/text@1']['output'] | null;
-      readonly techArea: CodecTypes['pg/text@1']['output'];
-      readonly department: CodecTypes['pg/text@1']['output'];
+      readonly department: CodecTypes['pg/text@1']['output'] | null;
       readonly status: 'OPEN' | 'COMPLETED' | 'ABANDONED' | 'CANCELLED';
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -326,7 +325,7 @@ export type FieldInputTypes = {
       readonly phone: CodecTypes['pg/text@1']['input'];
       readonly email: CodecTypes['pg/text@1']['input'];
       readonly group: CodecTypes['pg/text@1']['input'];
-      readonly techArea: CodecTypes['pg/text@1']['input'];
+      readonly department: CodecTypes['pg/text@1']['input'];
       readonly course: CodecTypes['pg/text@1']['input'] | null;
       readonly skills: CodecTypes['pg/text@1']['input'] | null;
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -347,8 +346,7 @@ export type FieldInputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly description: CodecTypes['pg/text@1']['input'] | null;
-      readonly techArea: CodecTypes['pg/text@1']['input'];
-      readonly department: CodecTypes['pg/text@1']['input'];
+      readonly department: CodecTypes['pg/text@1']['input'] | null;
       readonly status: 'OPEN' | 'COMPLETED' | 'ABANDONED' | 'CANCELLED';
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -389,6 +387,7 @@ export type StorageColumnTypes = {
     readonly interns: {
       readonly course: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly department: CodecTypes['pg/text@1']['output'];
       readonly email: CodecTypes['pg/text@1']['output'];
       readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly group: CodecTypes['pg/text@1']['output'];
@@ -399,7 +398,6 @@ export type StorageColumnTypes = {
       readonly skills: CodecTypes['pg/text@1']['output'] | null;
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly status: 'ACTIVE' | 'INACTIVE';
-      readonly techArea: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly password_reset_tokens: {
@@ -416,14 +414,13 @@ export type StorageColumnTypes = {
     };
     readonly projects: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-      readonly department: CodecTypes['pg/text@1']['output'];
+      readonly department: CodecTypes['pg/text@1']['output'] | null;
       readonly description: CodecTypes['pg/text@1']['output'] | null;
       readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly status: 'OPEN' | 'COMPLETED' | 'ABANDONED' | 'CANCELLED';
-      readonly techArea: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly staffs: {
@@ -455,6 +452,7 @@ export type StorageColumnInputTypes = {
     readonly interns: {
       readonly course: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly department: CodecTypes['pg/text@1']['input'];
       readonly email: CodecTypes['pg/text@1']['input'];
       readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly group: CodecTypes['pg/text@1']['input'];
@@ -465,7 +463,6 @@ export type StorageColumnInputTypes = {
       readonly skills: CodecTypes['pg/text@1']['input'] | null;
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly status: 'ACTIVE' | 'INACTIVE';
-      readonly techArea: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly password_reset_tokens: {
@@ -482,14 +479,13 @@ export type StorageColumnInputTypes = {
     };
     readonly projects: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
-      readonly department: CodecTypes['pg/text@1']['input'];
+      readonly department: CodecTypes['pg/text@1']['input'] | null;
       readonly description: CodecTypes['pg/text@1']['input'] | null;
       readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly status: 'OPEN' | 'COMPLETED' | 'ABANDONED' | 'CANCELLED';
-      readonly techArea: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly staffs: {
@@ -526,7 +522,7 @@ export namespace Models {
     phone: CodecTypes['pg/text@1']['output'];
     email: CodecTypes['pg/text@1']['output'];
     group: CodecTypes['pg/text@1']['output'];
-    techArea: CodecTypes['pg/text@1']['output'];
+    department: CodecTypes['pg/text@1']['output'];
     course: CodecTypes['pg/text@1']['output'] | null;
     skills: CodecTypes['pg/text@1']['output'] | null;
     startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -543,8 +539,7 @@ export namespace Models {
     id: CodecTypes['pg/uuid@1']['output'];
     name: CodecTypes['pg/text@1']['output'];
     description: CodecTypes['pg/text@1']['output'] | null;
-    techArea: CodecTypes['pg/text@1']['output'];
-    department: CodecTypes['pg/text@1']['output'];
+    department: CodecTypes['pg/text@1']['output'] | null;
     status: 'OPEN' | 'COMPLETED' | 'ABANDONED' | 'CANCELLED';
     startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
     endDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -770,7 +765,7 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                 };
-                readonly techArea: {
+                readonly department: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
@@ -959,15 +954,10 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
-                readonly techArea: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                };
                 readonly department: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
+                  readonly nullable: true;
                 };
                 readonly status: {
                   readonly nativeType: 'text';
@@ -1244,7 +1234,7 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly techArea: {
+              readonly department: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
@@ -1326,7 +1316,7 @@ type ContractBase = Omit<
                 readonly phone: { readonly column: 'phone' };
                 readonly email: { readonly column: 'email' };
                 readonly group: { readonly column: 'group' };
-                readonly techArea: { readonly column: 'techArea' };
+                readonly department: { readonly column: 'department' };
                 readonly course: { readonly column: 'course' };
                 readonly skills: { readonly column: 'skills' };
                 readonly startDate: { readonly column: 'startDate' };
@@ -1407,12 +1397,8 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly techArea: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
               readonly department: {
-                readonly nullable: false;
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly status: {
@@ -1468,7 +1454,6 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly name: { readonly column: 'name' };
                 readonly description: { readonly column: 'description' };
-                readonly techArea: { readonly column: 'techArea' };
                 readonly department: { readonly column: 'department' };
                 readonly status: { readonly column: 'status' };
                 readonly startDate: { readonly column: 'startDate' };

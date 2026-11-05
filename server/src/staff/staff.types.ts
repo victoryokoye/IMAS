@@ -1,5 +1,7 @@
 import type { StaffRole, StaffStatus } from "./staff.schema";
 
+export type StaffSortField = "name" | "createdAt" | "updatedAt";
+
 export interface Staff {
   id: string;
   name: string;
