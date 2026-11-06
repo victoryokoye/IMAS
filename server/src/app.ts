@@ -18,10 +18,10 @@ const app: express.Application = express();
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/auth", authRoutes);
-app.use("/interns", internRoutes);
-app.use("/projects", projectRoutes);
-app.use("/staffs", staffRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/interns", internRoutes);
+app.use("/api/v1/projects", projectRoutes);
+app.use("/api/v1/staffs", staffRoutes);
 
 app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1", attendanceRoutes);

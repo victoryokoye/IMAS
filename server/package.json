@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/server.ts",
   "scripts": {
-    "dev": "cross-env NODE_EXTRA_CA_CERTS=src/prisma/ca.pem tsx watch src/server.ts",
+    "dev": "cross-env NODE_EXTRA_CA_CERTS=prisma/ca.pem tsx watch src/server.ts",
     "build": "prisma contract emit",
     "start": "tsx src/server.ts",
     "contract:emit": "prisma contract emit"

@@ -24,7 +24,7 @@
       "model": "Project",
       "namespace": "public"
     },
-    "staffs": {
+    "staff": {
       "model": "Staff",
       "namespace": "public"
     }
@@ -891,7 +891,7 @@
                 }
               },
               "namespaceId": "public",
-              "table": "staffs"
+              "table": "staff"
             }
           }
         }
@@ -1013,7 +1013,7 @@
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "staffs"
+                    "tableName": "staff"
                   }
                 },
                 {
@@ -1030,7 +1030,7 @@
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "staffs"
+                    "tableName": "staff"
                   }
                 }
               ],
@@ -1242,7 +1242,7 @@
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "staffs"
+                    "tableName": "staff"
                   }
                 }
               ],
@@ -1437,17 +1437,17 @@
               },
               "uniques": []
             },
-            "staffs": {
+            "staff": {
               "checks": [
                 {
                   "expression": "\"role\" IN ('ADMINISTRATOR', 'SUPERVISOR', 'INTERN_COORDINATOR')",
-                  "name": "staffs_role_check_1dbb2939",
-                  "prefix": "staffs_role_check"
+                  "name": "staff_role_check_1dbb2939",
+                  "prefix": "staff_role_check"
                 },
                 {
                   "expression": "\"status\" IN ('ACTIVE', 'INACTIVE')",
-                  "name": "staffs_status_check_ee520df2",
-                  "prefix": "staffs_status_check"
+                  "name": "staff_status_check_ee520df2",
+                  "prefix": "staff_status_check"
                 }
               ],
               "columns": {
@@ -1574,10 +1574,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "7d9f05d318a83d90a57cd0c9faae674201ca625361470a22a062bef73ea757ba"
+    "storageHash": "f12372da8aed4a5f0899e64b8e4bb63df5e34fc088084c7b195e320fe9e58232"
   },
   "execution": {
-    "executionHash": "b1238a28cd4fa220f18f9be332f0aff34738087a7eec3a61e3b9748e33cb46b9",
+    "executionHash": "5b3d7f2e9526e5aa0892dffa6f0a443781bc28f15e6efb22f24e22da385f1b9f",
     "mutations": {
       "defaults": [
         {
@@ -1643,7 +1643,7 @@
           "ref": {
             "column": "id",
             "namespace": "public",
-            "table": "staffs"
+            "table": "staff"
           }
         }
       ]

@@ -11,18 +11,24 @@ import {
   editAttendanceSchema,
   deleteAttendanceSchema,
 } from "./attendance.schema";
+import { authMiddleware } from "../middlewares/auth.middleware";
+import { authorizeRoles } from "../middlewares/role.middleware";
 
 const router: Router = Router();
+
+router.use(authMiddleware);
 
 // Intern self-service using 4-digit PIN
 router.post(
   "/attendance/sign-in",
+  authorizeRoles("ADMINISTRATOR", "INTERN_COORDINATOR"),
   validate(checkInSchema),
   attendanceController.checkIn,
 );
 
 router.post(
   "/attendance/sign-out",
+  authorizeRoles("ADMINISTRATOR", "INTERN_COORDINATOR"),
   validate(checkOutSchema),
   attendanceController.checkOut,
 );
@@ -30,7 +36,7 @@ router.post(
 // Staff-only: mark permitted absence (Admins and Supervisors only)
 router.post(
   "/attendance/permitted-absence",
-  // requireStaff("ADMINISTRATOR", "SUPERVISOR"),
+  authorizeRoles("ADMINISTRATOR", "SUPERVISOR"),
   validate(markPermittedAbsenceSchema),
   attendanceController.markPermittedAbsence,
 );
@@ -38,7 +44,7 @@ router.post(
 // Admin-only: Edit Attendance Record (Admins only)
 router.put(
   "/attendance/:id",
-  // requireStaff("ADMINISTRATOR"),
+  authorizeRoles("ADMINISTRATOR"),
   validate(editAttendanceSchema),
   attendanceController.editAttendance,
 );
@@ -62,8 +68,7 @@ router.get(
 
 router.delete(
   "/attendance/:id",
-  // authenticate,
-  // requireStaff("ADMINISTRATOR"),
+  authorizeRoles("ADMINISTRATOR"),
   validate(deleteAttendanceSchema),
   attendanceController.deleteAttendance,
 );
