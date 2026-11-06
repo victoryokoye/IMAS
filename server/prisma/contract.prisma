@@ -55,7 +55,7 @@ model Staff {
   // staff member who forgot password
   passwordResetTokens PasswordResetToken[]
 
-  @@map("staffs")
+  @@map("staff")
 }
 
 // ============================================================

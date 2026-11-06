@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'7d9f05d318a83d90a57cd0c9faae674201ca625361470a22a062bef73ea757ba'>;
+  StorageHashBase<'f12372da8aed4a5f0899e64b8e4bb63df5e34fc088084c7b195e320fe9e58232'>;
 export type ExecutionHash =
-  ExecutionHashBase<'b1238a28cd4fa220f18f9be332f0aff34738087a7eec3a61e3b9748e33cb46b9'>;
+  ExecutionHashBase<'5b3d7f2e9526e5aa0892dffa6f0a443781bc28f15e6efb22f24e22da385f1b9f'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -423,7 +423,7 @@ export type StorageColumnTypes = {
       readonly status: 'OPEN' | 'COMPLETED' | 'ABANDONED' | 'CANCELLED';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
-    readonly staffs: {
+    readonly staff: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly email: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/uuid@1']['output'];
@@ -488,7 +488,7 @@ export type StorageColumnInputTypes = {
       readonly status: 'OPEN' | 'COMPLETED' | 'ABANDONED' | 'CANCELLED';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
-    readonly staffs: {
+    readonly staff: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly email: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/uuid@1']['input'];
@@ -720,7 +720,7 @@ type ContractBase = Omit<
                   };
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'staffs';
+                    readonly tableName: 'staff';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -732,7 +732,7 @@ type ContractBase = Omit<
                   };
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'staffs';
+                    readonly tableName: 'staff';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -870,7 +870,7 @@ type ContractBase = Omit<
                   };
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'staffs';
+                    readonly tableName: 'staff';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -996,7 +996,7 @@ type ContractBase = Omit<
               indexes: readonly [];
               foreignKeys: readonly [];
             };
-            readonly staffs: {
+            readonly staff: {
               columns: {
                 readonly id: {
                   readonly nativeType: 'uuid';
@@ -1082,7 +1082,7 @@ type ContractBase = Omit<
   readonly target: 'postgres';
   readonly targetFamily: 'sql';
   readonly roots: {
-    readonly staffs: { readonly namespace: 'public' & NamespaceId; readonly model: 'Staff' };
+    readonly staff: { readonly namespace: 'public' & NamespaceId; readonly model: 'Staff' };
     readonly interns: { readonly namespace: 'public' & NamespaceId; readonly model: 'Intern' };
     readonly projects: { readonly namespace: 'public' & NamespaceId; readonly model: 'Project' };
     readonly project_intern: {
@@ -1591,7 +1591,7 @@ type ContractBase = Omit<
               };
             };
             readonly storage: {
-              readonly table: 'staffs';
+              readonly table: 'staff';
               readonly namespaceId: 'public';
               readonly fields: {
                 readonly id: { readonly column: 'id' };
@@ -1716,7 +1716,7 @@ type ContractBase = Omit<
         {
           readonly ref: {
             readonly namespace: 'public';
-            readonly table: 'staffs';
+            readonly table: 'staff';
             readonly column: 'id';
           };
           readonly onCreate: { readonly kind: 'generator'; readonly id: 'uuidv4' };
