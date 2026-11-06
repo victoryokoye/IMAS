@@ -1,94 +1,114 @@
-import { useState } from 'react';
-import { useAttendanceAction } from '../../hooks/attendance/useAttendanceAction';
+import { useEffect, useRef, useState } from "react";
+import { Modal } from "../../components/common/Modal";
+import { ErrorAlert } from "../../components/common/Feedback";
+import {
+  btnPrimary,
+  btnSecondary,
+  inputClass,
+} from "../../components/common/ui";
+import { useSignIn, useSignOut } from "../../hooks/useAttendance";
+import { PIN_LENGTH } from "../../utils/constants";
 
+/**
+ * Props:
+ *  intern  : { id, fullName }
+ *  action  : "SIGN_IN" | "SIGN_OUT"
+ *  onClose : () => void
+ *  onDone  : (record) => void   // called after the API confirms the action
+ */
 export default function PinDialog({ intern, action, onClose, onDone }) {
-  const [pin, setPin] = useState('');
-  const [success, setSuccess] = useState(false);
-  const { submit, isLoading, error } = useAttendanceAction();
-  const LABELS = { 'sign-in': 'Sign in', 'sign-out': 'Sign out', absent: 'Mark absent' };
-  const label = LABELS[action];
-  const needsPin = action !== 'absent';
+  const isSignIn = action === "SIGN_IN";
+  const signIn = useSignIn();
+  const signOut = useSignOut();
+  const mutation = isSignIn ? signIn : signOut;
 
-  async function handleSubmit(e) {
+  const [pin, setPin] = useState("");
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  const close = () => {
+    if (!mutation.isPending) onClose();
+  };
+
+  const handleChange = (e) => {
+    if (mutation.error) mutation.reset(); // clear the old "Invalid PIN" once they retype
+    setPin(e.target.value.replace(/\D/g, "").slice(0, PIN_LENGTH));
+  };
+
+  const submit = (e) => {
     e.preventDefault();
-    const ok = await submit({ internId: intern.id, action, pin });
-    if (ok) setSuccess(true);
-  }
+    if (pin.length !== PIN_LENGTH) return;
+    mutation.mutate(
+      { internId: intern.id, pin },
+      {
+        onSuccess: (record) => onDone?.(record),
+        onError: () => {
+          setPin(""); // never leave a wrong PIN on screen
+          inputRef.current?.focus();
+        },
+      },
+    );
+  };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-      <div role="dialog" aria-modal="true" className="w-full max-w-sm bg-white rounded-xl shadow-lg p-6">
-        {success ? (
-          <>
-            <p role="status" className="text-green-700 font-semibold mb-4">
-              {label} successful for {intern.name}.
-            </p>
-            <button
-              onClick={onDone}
-              className="w-full rounded-lg bg-orange-600 text-white font-semibold py-3"
-            >
-              Done
-            </button>
-          </>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <h2 className="text-lg font-bold text-slate-900 mb-1">
-              {label}: {intern.name}
-            </h2>
-            {needsPin ? (
-            <>
-              <p className="text-sm text-slate-500 mb-4">Enter the intern's PIN.</p>
-              <input
-                type="password"
-                inputMode="numeric"
-                value={pin}
-                onChange={(e) => setPin(e.target.value)}
-                placeholder="PIN"
-                autoFocus
-                required
-                className="w-full rounded-lg bg-blue-50 px-3 py-3 text-sm mb-3 outline-none focus:ring-2 focus:ring-orange-500"
-              />
-            </>
-          ) : (
-            <p className="text-sm text-slate-500 mb-4">Mark this intern as absent today?</p>
-          )}
+    <Modal
+      title={`${isSignIn ? "Sign in" : "Sign out"}: ${intern.fullName}`}
+      onClose={close}
+    >
+      <form onSubmit={submit} noValidate className="space-y-4">
+        <p className="text-sm text-slate-600">
+          Hand the device to {intern.fullName} to enter their {PIN_LENGTH}-digit
+          PIN.
+        </p>
 
-            <input
-              type="password"
-              inputMode="numeric"
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
-              placeholder="PIN"
-              autoFocus
-              required
-              className="w-full rounded-lg bg-blue-50 px-3 py-3 text-sm mb-3 outline-none focus:ring-2 focus:ring-orange-500"
-            />
+        <div>
+          <label
+            htmlFor="attendance-pin"
+            className="mb-1 block text-sm font-medium text-slate-800"
+          >
+            PIN
+          </label>
+          <input
+            id="attendance-pin"
+            ref={inputRef}
+            type="password"
+            inputMode="numeric"
+            autoComplete="off"
+            maxLength={PIN_LENGTH}
+            className={`${inputClass(Boolean(mutation.error))} text-center text-lg tracking-[0.5em]`}
+            value={pin}
+            onChange={handleChange}
+            disabled={mutation.isPending}
+          />
+        </div>
 
-            {error && (
-              <p role="alert" className="text-sm text-red-600 mb-3">
-                {error}
-              </p>
-            )}
+        {mutation.error && <ErrorAlert error={mutation.error} />}
 
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={onClose}
-                className="flex-1 rounded-lg bg-blue-50 text-slate-800 font-semibold py-3"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="flex-1 rounded-lg bg-orange-600 text-white font-semibold py-3 disabled:opacity-60"
-              >
-                {isLoading ? 'Submitting...' : label}
-              </button>
-            </div>
-          </form>
-        )}
-      </div>
-    </div>
+        <div className="flex justify-end gap-2">
+          <button
+            type="button"
+            className={btnSecondary}
+            onClick={close}
+            disabled={mutation.isPending}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className={btnPrimary}
+            disabled={pin.length !== PIN_LENGTH || mutation.isPending}
+          >
+            {mutation.isPending
+              ? "Verifying…"
+              : isSignIn
+                ? "Sign in"
+                : "Sign out"}
+          </button>
+        </div>
+      </form>
+    </Modal>
   );
 }
