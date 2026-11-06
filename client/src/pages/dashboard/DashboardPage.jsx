@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useDashboardSummary } from "../../hooks/useDashboard";
+import RecentAttendanceLog from "../../components/dashboard/RecentAttendanceLog";
 import {
   Users,
   UserCheck,
@@ -8,12 +10,26 @@ import {
   ClipboardCheck,
   ArrowUpRight,
   CalendarDays,
-  Activity,
 } from "lucide-react";
 
 function DashboardPage() {
   // Temporary role until authentication is connected
   const [currentRole, setCurrentRole] = useState("ADMINISTRATOR");
+
+  // const summary = useDashboardSummary();
+
+  const summary = {
+    data: {
+      totalInterns: 6,
+      activeInterns: 5,
+      inactiveInterns: 1,
+      presentToday: 3,
+      signedOutToday: 1,
+      currentlyPresent: 2,
+      totalStaff: 4,
+      activeProjects: 2,
+    },
+  };
 
   const dashboardData = {
     ADMINISTRATOR: {
@@ -22,25 +38,25 @@ function DashboardPage() {
       stats: [
         {
           title: "Total Active Interns",
-          value: 48,
+          value: summary.data?.activeInterns,
           icon: Users,
           color: "blue",
         },
         {
           title: "Present Today",
-          value: 36,
+          value: summary.data?.presentToday,
           icon: UserCheck,
           color: "green",
         },
         {
           title: "Currently Signed In",
-          value: 28,
+          value: summary.data?.currentlyPresent,
           icon: Clock,
           color: "purple",
         },
         {
           title: "Already Signed Out",
-          value: 8,
+          value: summary.data?.signedOutToday,
           icon: LogOut,
           color: "orange",
         },
@@ -79,19 +95,19 @@ function DashboardPage() {
       stats: [
         {
           title: "Total Active Interns",
-          value: 18,
+          value: summary.data?.activeInterns || "--",
           icon: Users,
           color: "blue",
         },
         {
           title: "Present Today",
-          value: 14,
+          value: summary.data?.presentToday || "--",
           icon: UserCheck,
           color: "green",
         },
         {
           title: "Currently Signed In",
-          value: 11,
+          value: summary.data?.currentlyPresent || "--",
           icon: Clock,
           color: "purple",
         },
@@ -124,25 +140,25 @@ function DashboardPage() {
       stats: [
         {
           title: "Total Active Interns",
-          value: 48,
+          value: summary.data?.activeInterns || "--",
           icon: Users,
           color: "blue",
         },
         {
           title: "Present Today",
-          value: 36,
+          value: summary.data?.presentToday || "--",
           icon: UserCheck,
           color: "green",
         },
         {
           title: "Currently Signed In",
-          value: 28,
+          value: summary.data?.currentlyPresent || "--",
           icon: Clock,
           color: "purple",
         },
         {
           title: "Already Signed Out",
-          value: 8,
+          value: summary.data?.signedOutToday || "--",
           icon: LogOut,
           color: "orange",
         },
@@ -273,36 +289,7 @@ function DashboardPage() {
         </div>
       </section>
 
-      <section className="rounded-xl border border-gray-200 bg-white">
-        <div className="flex items-center gap-3 border-b border-gray-100 p-5">
-          <div className="rounded-lg bg-blue-50 p-2.5 text-blue-600">
-            <Activity size={21} />
-          </div>
-
-          <div>
-            <h2 className="font-semibold text-gray-900">
-              Recent Attendance Activity
-            </h2>
-            <p className="text-sm text-gray-500">
-              A summary of today's attendance activity.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-8 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-500">
-            <CalendarDays size={23} />
-          </div>
-
-          <h3 className="mt-3 font-medium text-gray-900">
-            No attendance activity available
-          </h3>
-
-          <p className="mt-1 text-sm text-gray-500">
-            Attendance records will appear here when connected to the backend.
-          </p>
-        </div>
-      </section>
+      <RecentAttendanceLog maxEntries={8} />
     </div>
   );
 }
