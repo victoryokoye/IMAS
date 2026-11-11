@@ -8,6 +8,7 @@ import type {
   MarkPermittedAbsenceInput,
   EditAttendanceInput,
 } from "./attendance.schema";
+import { string } from "zod";
 
 // ---------------------------------------------------------------------------
 // Helper: verify intern exists, is ACTIVE, and the PIN matches their bcrypt hash
@@ -20,6 +21,12 @@ async function verifyIntern(internId: string, pin: string) {
   }
   if (intern.status !== "ACTIVE") {
     throw new HttpError(403, "Intern account is inactive");
+  }
+  if (!intern.pin) {
+    throw new HttpError(
+      404,
+      "Intern pin not found. Please set a pin for the intern before checking in or out.",
+    );
   }
 
   const pinValid = await bcrypt.compare(pin, intern.pin);
@@ -38,17 +45,14 @@ function isUniqueViolation(err: any) {
 // Attendance service
 // ---------------------------------------------------------------------------
 export const attendanceService = {
-  // -------------------------------------------------------------------------
-  // Intern signs in for today using their 4-digit PIN.
-  // Creates a new attendance record (PRESENT, signInTime = now).
-  // Rejects if the intern already has an open sign-in for today.
-  // -------------------------------------------------------------------------
-  async checkIn({ internId, pin }: CheckInInput): Promise<object> {
+  async checkIn(
+    { internId, pin }: CheckInInput,
+    staffId: string,
+  ): Promise<object> {
     await verifyIntern(internId, pin);
 
-    const today = Temporal.Now.plainDateISO();
+    const today = Temporal.Now.plainDateISO(process.env.TIMEZONE);
 
-    // Check for an existing record today
     const existing = await db.orm.public.Attendance.where({
       internId,
       date: today,
@@ -58,45 +62,42 @@ export const attendanceService = {
       if (existing.signInTime !== null) {
         throw new HttpError(409, "Already signed in for today");
       }
-      // Record exists but has no signInTime (e.g. pre-created as ABSENT by a
-      // daily job). Update it to PRESENT with signInTime.
       const updated = await db.orm.public.Attendance.where({
         internId,
         date: today,
       }).update({
         status: "PRESENT",
         signInTime: Temporal.Now.instant(),
+        signedInBy: staffId, // staff who authorized the sign-in
       });
       if (!updated) throw new HttpError(500, "Failed to update attendance");
       return updated;
     }
 
-    // No record yet — create one
     return db.orm.public.Attendance.create({
       internId,
       date: today,
       status: "PRESENT",
       signInTime: Temporal.Now.instant(),
+      signedInBy: staffId,
     });
   },
 
-  // -------------------------------------------------------------------------
-  // Intern signs out for today using their 4-digit PIN.
-  // Updates the existing PRESENT record with signOutTime.
-  // -------------------------------------------------------------------------
-  async checkOut({ internId, pin }: CheckOutInput): Promise<object> {
+  async checkOut(
+    { internId, pin }: CheckOutInput,
+    staffId: string,
+  ): Promise<object> {
     await verifyIntern(internId, pin);
 
-    const today = Temporal.Now.plainDateISO();
+    const today = Temporal.Now.plainDateISO(process.env.TIMEZONE);
 
     const record = await db.orm.public.Attendance.where({
       internId,
       date: today,
     }).first();
 
-    if (!record) {
+    if (!record)
       throw new HttpError(404, "No attendance record found for today");
-    }
     if (record.status !== "PRESENT") {
       throw new HttpError(409, "Cannot sign out: not marked as PRESENT today");
     }
@@ -112,22 +113,17 @@ export const attendanceService = {
       date: today,
     }).update({
       signOutTime: Temporal.Now.instant(),
+      signedOutBy: staffId, // staff who authorized the sign-out
     });
 
     if (!updated) throw new HttpError(500, "Failed to update attendance");
     return updated;
   },
 
-  // -------------------------------------------------------------------------
-  // Staff marks a permitted absence for an intern on a given date.
-  // Only ADMINISTRATOR and SUPERVISOR roles are authorised to call this.
-  // The staffId is injected by the auth middleware (res.locals.staff.id).
-  // -------------------------------------------------------------------------
   async markPermittedAbsence(
     { internId, date }: MarkPermittedAbsenceInput,
-    // staffId: string,
+    staffId: string,
   ): Promise<object> {
-    // Verify intern exists
     const intern = await db.orm.public.Intern.where({ id: internId }).first();
     if (!intern) throw new HttpError(404, "Intern not found");
 
@@ -147,24 +143,24 @@ export const attendanceService = {
           "Absence already marked as permitted for this date",
         );
       }
-      // Override whatever was there (e.g. ABSENT) to PERMITTED_ABSENCE
       const updated = await db.orm.public.Attendance.where({
         internId,
         date: absenceDate,
       }).update({
         status: "PERMITTED_ABSENCE",
-        // signedInBy: staffId,
+        signedInBy: staffId, // the permitting staff member is recorded
+        signedOutBy: staffId, // as both signer-in and signer-out
       });
       if (!updated) throw new HttpError(500, "Failed to update attendance");
       return updated;
     }
 
-    // No record yet — create one
     return db.orm.public.Attendance.create({
       internId,
       date: absenceDate,
       status: "PERMITTED_ABSENCE",
-      // signedInBy: staffId,
+      signedInBy: staffId,
+      signedOutBy: staffId,
     });
   },
 
