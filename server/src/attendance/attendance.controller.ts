@@ -3,33 +3,54 @@ import { attendanceService } from "./attendance.service";
 
 // Controllers only handle HTTP: read validated input, call the service, send the response.
 export const attendanceController = {
-  async checkIn(_req: Request, res: Response, next: NextFunction) {
+  async checkIn(req: Request, res: Response, next: NextFunction) {
     try {
+      const staffId = req.user?.id;
       const { body } = res.locals.validated;
-      const record = await attendanceService.checkIn(body);
+
+      if (!staffId) {
+        return res.status(401).json({
+          message: "Unauthorized",
+        });
+      }
+      const record = await attendanceService.checkIn(body, staffId);
       res.status(201).json(record);
     } catch (err) {
       next(err);
     }
   },
 
-  async checkOut(_req: Request, res: Response, next: NextFunction) {
+  async checkOut(req: Request, res: Response, next: NextFunction) {
     try {
+      const staffId = req.user?.id;
       const { body } = res.locals.validated;
-      const record = await attendanceService.checkOut(body);
+
+      if (!staffId) {
+        return res.status(401).json({
+          message: "Unauthorized",
+        });
+      }
+      const record = await attendanceService.checkOut(body, staffId);
       res.json(record);
     } catch (err) {
       next(err);
     }
   },
 
-  async markPermittedAbsence(_req: Request, res: Response, next: NextFunction) {
+  async markPermittedAbsence(req: Request, res: Response, next: NextFunction) {
     try {
+      const staffId = req.user?.id;
       const { body } = res.locals.validated;
-      // const staffId = res.locals.staff!.id;
+
+      if (!staffId) {
+        return res.status(401).json({
+          message: "Unauthorized",
+        });
+      }
+
       const record = await attendanceService.markPermittedAbsence(
         body,
-        // staffId,
+        staffId,
       );
       res.json(record);
     } catch (err) {
