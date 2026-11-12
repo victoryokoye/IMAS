@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { api } from "./api";
 import { cleanParams } from "../utils/params";
-import type { ActiveStatus, ApiList, ApiSuccess, Paginated, Role } from "../types/api";
+import { toPaginated, unwrap } from "../utils/pagination";
+import type { ActiveStatus, Paginated, Role } from "../types/api";
 import type { StaffInput, StaffMember, StaffUpdate } from "../types/attendance";
 
 export interface StaffListParams {
@@ -11,23 +13,38 @@ export interface StaffListParams {
   status?: ActiveStatus | "";
 }
 
+/** The deployed backend returns `name`; the UI uses `fullName`. */
+function normalizeStaff(raw: any): StaffMember {
+  return { ...raw, fullName: raw.fullName ?? raw.name ?? "" };
+}
+
 export const staffService = {
   list: async (params: StaffListParams): Promise<Paginated<StaffMember>> => {
-    const { data } = await api.get<ApiList<StaffMember>>("/staff", { params: cleanParams(params) });
-    return { items: data.data, meta: data.meta };
+    const res = await api.get("/staffs", { params: cleanParams(params) });
+    return toPaginated<StaffMember>(res.data, normalizeStaff, params);
   },
 
-  get: async (id: string) => (await api.get<ApiSuccess<StaffMember>>(`/staff/${id}`)).data.data,
+  get: async (id: string) =>
+    normalizeStaff(unwrap((await api.get(`/staffs/${id}`)).data, "staff")),
 
   create: async (input: StaffInput) =>
-    (await api.post<ApiSuccess<StaffMember>>("/staff", input)).data.data,
+    normalizeStaff(unwrap((await api.post("/staffs", input)).data, "staff")),
 
   update: async (id: string, input: StaffUpdate) =>
-    (await api.put<ApiSuccess<StaffMember>>(`/staff/${id}`, input)).data.data,
+    normalizeStaff(
+      unwrap((await api.put(`/staffs/${id}`, input)).data, "staff"),
+    ),
 
   setStatus: async (id: string, status: ActiveStatus) =>
-    (await api.patch<ApiSuccess<StaffMember>>(`/staff/${id}/status`, { status })).data.data,
+    normalizeStaff(
+      unwrap(
+        (await api.patch(`/staffs/${id}/status`, { status })).data,
+        "staff",
+      ),
+    ),
 
   setRole: async (id: string, role: Role) =>
-    (await api.patch<ApiSuccess<StaffMember>>(`/staff/${id}/role`, { role })).data.data,
+    normalizeStaff(
+      unwrap((await api.patch(`/staffs/${id}/role`, { role })).data, "staff"),
+    ),
 };

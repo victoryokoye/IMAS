@@ -1,19 +1,27 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 import PageHeader from "../../components/common/PageHeader";
 import StatusBadge from "../../components/common/StatusBadge";
 import Pagination from "../../components/common/Pagination";
-import { EmptyState, ErrorAlert, Spinner } from "../../components/common/Feedback";
+import {
+  EmptyState,
+  ErrorAlert,
+  Spinner,
+} from "../../components/common/Feedback";
 import { ConfirmDialog } from "../../components/common/Modal";
 import AssignInternsModal from "../../components/projects/AssignInternsModal";
-import { btnPrimary, btnSecondary, inputClass } from "../../components/common/ui";
+import {
+  btnPrimary,
+  btnSecondary,
+  inputClass,
+} from "../../components/common/ui";
 import {
   useProject,
   useProjectInterns,
   useRemoveProjectIntern,
   useSetProjectStatus,
 } from "../../hooks/useProjects";
-import { useCurrentStaff } from "../../hooks/useCurrentStaff";
 import { canManageProjects } from "../../utils/permissions";
 import { PROJECT_STATUSES } from "../../utils/constants";
 import { formatDate } from "../../utils/format";
@@ -21,22 +29,27 @@ import type { ProjectIntern, ProjectStatus } from "../../types/api";
 
 export default function ProjectDetailsPage() {
   const { id } = useParams();
-  const { data: staff } = useCurrentStaff();
+  const { staff } = useAuth();
   const canManage = canManageProjects(staff?.role);
 
   const project = useProject(id);
-  const [page, setPage] = useState(1);
-  const interns = useProjectInterns(id, { page, limit: 10 });
+  // const [page, setPage] = useState(1);
+  // const interns = useProjectInterns(id, { page, limit: 10 });
 
   const statusMutation = useSetProjectStatus();
-  const removeMutation = useRemoveProjectIntern();
+  // const removeMutation = useRemoveProjectIntern();
 
-  const [pendingStatus, setPendingStatus] = useState<ProjectStatus | null>(null);
-  const [assignOpen, setAssignOpen] = useState(false);
-  const [toRemove, setToRemove] = useState<ProjectIntern | null>(null);
+  const [pendingStatus, setPendingStatus] = useState<ProjectStatus | null>(
+    null,
+  );
+  // const [assignOpen, setAssignOpen] = useState(false);
+  // const [toRemove, setToRemove] = useState<ProjectIntern | null>(null);
 
   if (project.isPending) return <Spinner />;
-  if (project.isError) return <ErrorAlert error={project.error} onRetry={() => project.refetch()} />;
+  if (project.isError)
+    return (
+      <ErrorAlert error={project.error} onRetry={() => project.refetch()} />
+    );
 
   const p = project.data;
   const selectedStatus = pendingStatus ?? p.status;
@@ -78,7 +91,9 @@ export default function ProjectDetailsPage() {
           </div>
           <div className="sm:col-span-3">
             <dt className="text-xs text-slate-500">Description</dt>
-            <dd className="mt-0.5 whitespace-pre-wrap text-sm">{p.description || "—"}</dd>
+            <dd className="mt-0.5 whitespace-pre-wrap text-sm">
+              {p.description || "—"}
+            </dd>
           </div>
           <div>
             <dt className="text-xs text-slate-500">Created</dt>
@@ -90,10 +105,13 @@ export default function ProjectDetailsPage() {
           </div>
         </dl>
 
-        {canManage && (
+        {/* {canManage && (
           <div className="mt-6 flex flex-wrap items-end gap-3 border-t border-slate-200 pt-5">
             <div>
-              <label htmlFor="project-status" className="mb-1 block text-sm font-medium text-slate-800">
+              <label
+                htmlFor="project-status"
+                className="mb-1 block text-sm font-medium text-slate-800"
+              >
                 Change status
               </label>
               <select
@@ -131,14 +149,20 @@ export default function ProjectDetailsPage() {
           <div className="mt-3">
             <ErrorAlert error={statusMutation.error} />
           </div>
-        )}
+        )} */}
       </div>
 
-      <section className="mt-8">
+      {/* <section className="mt-8">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">Interns on this project</h2>
+          <h2 className="text-lg font-semibold text-slate-900">
+            Interns on this project
+          </h2>
           {canManage && (
-            <button type="button" className={btnPrimary} onClick={() => setAssignOpen(true)}>
+            <button
+              type="button"
+              className={btnPrimary}
+              onClick={() => setAssignOpen(true)}
+            >
               Assign interns
             </button>
           )}
@@ -149,7 +173,10 @@ export default function ProjectDetailsPage() {
         ) : interns.isError ? (
           <ErrorAlert error={interns.error} onRetry={() => interns.refetch()} />
         ) : interns.data.items.length === 0 ? (
-          <EmptyState title="No interns assigned" description="Assign interns to track who is working on this project." />
+          <EmptyState
+            title="No interns assigned"
+            description="Assign interns to track who is working on this project."
+          />
         ) : (
           <>
             <div className="overflow-x-auto rounded-md border border-slate-200 bg-white">
@@ -167,7 +194,10 @@ export default function ProjectDetailsPage() {
                   {interns.data.items.map((i) => (
                     <tr key={i.id}>
                       <td className="px-4 py-3">
-                        <Link to={`/interns/${i.id}`} className="font-medium text-slate-900 hover:underline">
+                        <Link
+                          to={`/interns/${i.id}`}
+                          className="font-medium text-slate-900 hover:underline"
+                        >
                           {i.fullName}
                         </Link>
                       </td>
@@ -192,12 +222,21 @@ export default function ProjectDetailsPage() {
                 </tbody>
               </table>
             </div>
-            <Pagination meta={interns.data.meta} onPageChange={setPage} disabled={interns.isFetching} />
+            <Pagination
+              meta={interns.data.meta}
+              onPageChange={setPage}
+              disabled={interns.isFetching}
+            />
           </>
         )}
       </section>
 
-      {assignOpen && <AssignInternsModal projectId={p.id} onClose={() => setAssignOpen(false)} />}
+      {assignOpen && (
+        <AssignInternsModal
+          projectId={p.id}
+          onClose={() => setAssignOpen(false)}
+        />
+      )}
 
       {toRemove && (
         <ConfirmDialog
@@ -206,7 +245,11 @@ export default function ProjectDetailsPage() {
           confirmLabel="Remove"
           destructive
           loading={removeMutation.isPending}
-          error={removeMutation.error ? <ErrorAlert error={removeMutation.error} /> : undefined}
+          error={
+            removeMutation.error ? (
+              <ErrorAlert error={removeMutation.error} />
+            ) : undefined
+          }
           onCancel={() => {
             removeMutation.reset();
             setToRemove(null);
@@ -218,13 +261,14 @@ export default function ProjectDetailsPage() {
                 onSuccess: () => {
                   setToRemove(null);
                   // step back a page if we just removed the last row of this page
-                  if (interns.data?.items.length === 1 && page > 1) setPage(page - 1);
+                  if (interns.data?.items.length === 1 && page > 1)
+                    setPage(page - 1);
                 },
               },
             )
           }
         />
-      )}
+      )} */}
     </div>
   );
 }

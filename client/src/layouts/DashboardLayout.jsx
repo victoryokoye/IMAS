@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-// import { useAuthStore } from "../stores/auth.store";
+import { useLogout } from "../hooks/useAuth";
+import { useAuth } from "../hooks/useAuth";
 import {
   LayoutDashboard,
   Users,
@@ -54,34 +55,17 @@ function getInitials(name = "") {
     .join("");
 }
 
-const Staff = {
-  user: {
-    id: "staff-uuid",
-    fullName: "Jane Doe",
-    email: "jane@example.com",
-    role: "ADMINISTRATOR",
-    status: "ACTIVE",
-    createdAt: "2026-10-01T09:00:00.000Z",
-    updatedAt: "2026-10-10T12:00:00.000Z",
-  },
-  logout: () => {
-    console.log("Log User out");
-  },
-};
-
 export default function DashboardLayout() {
   const navigate = useNavigate();
-  const { user, logout } = Staff;
+  const logout = useLogout();
+  const { staff, role } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const displayName = user?.fullName ?? "Staff";
-  const navItems = NAV_ITEMS.filter(
-    (i) => !i.roles || i.roles.includes(user?.role),
-  );
+  const displayName = staff?.fullName ?? "Staff";
+  const navItems = NAV_ITEMS.filter((i) => !i.roles || i.roles.includes(role));
 
   const handleLogout = async () => {
-    await logout();
-    navigate("/login", { replace: true });
+    logout.mutate(undefined, { onSettled: () => navigate("/login") });
   };
 
   const linkClass = ({ isActive }) =>
@@ -161,7 +145,7 @@ export default function DashboardLayout() {
                 {displayName}
               </p>
               <p className="text-xs text-slate-500">
-                {user?.email} · {ROLE_LABELS[user?.role] ?? user?.role}
+                {staff?.email} · {ROLE_LABELS[role] ?? role}
               </p>
             </div>
             <div

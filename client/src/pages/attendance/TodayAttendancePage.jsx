@@ -40,36 +40,12 @@ export default function TodayAttendancePage() {
   const [notice, setNotice] = useState("");
 
   // 1) Who exists (active interns, server-side search + pagination)
-  // const interns = useInterns({
-  //   page,
-  //   limit: LIMIT,
-  //   search: debouncedSearch,
-  //   status: "ACTIVE",
-  // });
-  const interns = {
-    status: "success",
-    data: [
-      {
-        id: "intern-uuid",
-        fullName: "John Doe",
-        phone: "08012345678",
-        email: "john@example.com",
-        group: "Group A",
-        techArea: "Web Development",
-        course: "Computer Science",
-        skills: ["JavaScript", "React"],
-        startDate: "2026-10-01",
-        endDate: "2027-03-31",
-        status: "ACTIVE",
-      },
-    ],
-    meta: {
-      page: 1,
-      limit: 10,
-      total: 1,
-      totalPages: 1,
-    },
-  };
+  const interns = useInterns({
+    page,
+    limit: LIMIT,
+    search: debouncedSearch,
+    status: "ACTIVE",
+  });
 
   // 2) Who has a record today (matched to interns by id below)
   const today = useTodayAttendance({ page: 1, limit: TODAY_LOOKUP_LIMIT });
@@ -158,7 +134,7 @@ export default function TodayAttendancePage() {
         <Spinner />
       ) : interns.isError ? (
         <ErrorAlert error={interns.error} onRetry={() => interns.refetch()} />
-      ) : interns.data.length === 0 ? (
+      ) : interns.data.items.length === 0 ? (
         <p className="rounded-xl bg-white p-8 text-center text-sm text-slate-600 shadow">
           {debouncedSearch
             ? "No active interns match your search."
@@ -167,7 +143,7 @@ export default function TodayAttendancePage() {
       ) : (
         <>
           <ul className="divide-y divide-slate-100 rounded-xl bg-white shadow">
-            {interns.data.map((intern) => {
+            {interns.data.items.map((intern) => {
               const record = recordsByIntern.get(intern.id);
               const state = getAttendanceState(record);
               const badge = STATE_BADGE[state];
