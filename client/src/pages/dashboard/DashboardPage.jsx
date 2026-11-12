@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useDashboardSummary } from "../../hooks/useDashboard";
+import { useAuth } from "../../hooks/useAuth";
 import RecentAttendanceLog from "../../components/dashboard/RecentAttendanceLog";
 import {
   Users,
@@ -13,23 +14,11 @@ import {
 } from "lucide-react";
 
 function DashboardPage() {
-  // Temporary role until authentication is connected
-  const [currentRole, setCurrentRole] = useState("ADMINISTRATOR");
+  const { role } = useAuth();
 
-  // const summary = useDashboardSummary();
+  const [currentRole, setCurrentRole] = useState(role);
 
-  const summary = {
-    data: {
-      totalInterns: 6,
-      activeInterns: 5,
-      inactiveInterns: 1,
-      presentToday: 3,
-      signedOutToday: 1,
-      currentlyPresent: 2,
-      totalStaff: 4,
-      activeProjects: 2,
-    },
-  };
+  const summary = useDashboardSummary();
 
   const dashboardData = {
     ADMINISTRATOR: {
@@ -200,26 +189,6 @@ function DashboardPage() {
       <div>
         <h1 className="text-2xl font-bold text-gray-900">{data.title}</h1>
         <p className="mt-1 text-sm text-gray-500">{data.description}</p>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-3">
-        <label
-          htmlFor="role-switcher"
-          className="text-sm font-medium text-gray-700"
-        >
-          Preview Dashboard:
-        </label>
-
-        <select
-          id="role-switcher"
-          value={currentRole}
-          onChange={(e) => setCurrentRole(e.target.value)}
-          className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm outline-none focus:border-blue-500"
-        >
-          <option value="ADMINISTRATOR">Administrator</option>
-          <option value="SUPERVISOR">Supervisor</option>
-          <option value="INTERN_COORDINATOR">Intern Coordinator</option>
-        </select>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">

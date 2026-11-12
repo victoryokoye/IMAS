@@ -34,11 +34,11 @@ export interface Staff {
 
 export interface Intern {
   id: string;
-  fullName: string;
+  name: string;
   phone: string;
   email: string;
   group: string;
-  techArea: string;
+  department: string;
   course?: string | null;
   skills: string[];
   startDate: string; // YYYY-MM-DD
@@ -49,11 +49,11 @@ export interface Intern {
 }
 
 export interface InternInput {
-  fullName: string;
+  name: string;
   phone: string;
   email: string;
   group: string;
-  techArea: string;
+  department: string;
   course?: string;
   skills: string[];
   startDate: string;
@@ -66,8 +66,9 @@ export interface Project {
   description?: string | null;
   status: ProjectStatus;
   department?: string | null;
-  techArea?: string | null;
   internCount?: number;
+  startDate: string;
+  endDate: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -76,9 +77,10 @@ export interface ProjectInput {
   name: string;
   description?: string;
   department?: string;
-  techArea?: string;
   /** Only accepted on create; use PATCH /projects/:id/status afterwards */
   status?: ProjectStatus;
+  startDate: string;
+  endDate: string;
 }
 
 export interface ProjectIntern {

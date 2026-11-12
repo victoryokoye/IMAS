@@ -1,27 +1,29 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useLogin } from "../../hooks/auth/useLogin";
+import { useLogin } from "../../hooks/useAuth"; // not the old hooks/useLogin
+import { ErrorAlert } from "../../components/common/Feedback";
 
 export default function LoginPage() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  // const { login, isLoading, error } = useLogin();
+  const [validationError, setValidationError] = useState("");
+  const login = useLogin();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/"; // assumed: default landing page
+  const from = location.state?.from?.pathname || "/dashboard";
 
-  async function handleSubmit(e) {
+  function handleSubmit(e) {
     e.preventDefault();
-    if (!identifier || !password) {
-      navigate(from, { replace: true });
+    if (!identifier.trim() || !password) {
+      setValidationError("Enter your email and password.");
       return;
     }
-    if (identifier && password) {
-      navigate("/dashboard", { replace: true });
-    }
-    // const ok = await login({ email: identifier, password }); // assumed: backend field name
-    // if (ok) navigate(from, { replace: true });
+    setValidationError("");
+    login.mutate(
+      { email: identifier.trim(), password },
+      { onSuccess: () => navigate(from, { replace: true }) },
+    );
   }
 
   return (
@@ -76,19 +78,19 @@ export default function LoginPage() {
         </button>
       </div>
 
-      {/* {error && (
-        <p role="alert" className="text-sm text-red-600 mb-3">
-          {error}
+      {validationError && (
+        <p role="alert" className="text-sm text-red-600">
+          {validationError}
         </p>
-      )} */}
+      )}
+      {login.error && <ErrorAlert error={login.error} />}
 
       <button
         type="submit"
-        // disabled={isLoading}
+        disabled={login.isPending}
         className="w-full rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 mt-4 disabled:opacity-60"
       >
-        {"Sign In →"}
-        {/* {isLoading ? "Signing in..." : "Sign In →"} */}
+        {login.isPending ? "Signing in…" : "Sign in"}
       </button>
     </form>
   );

@@ -7,11 +7,17 @@ import { ConfirmDialog } from "../../components/common/Modal";
 import SetPinModal from "../../components/interns/SetPinModal";
 import { btnPrimary, btnSecondary } from "../../components/common/ui";
 import { useIntern, useSetInternStatus } from "../../hooks/useInterns";
-import { useCurrentStaff } from "../../hooks/useCurrentStaff";
+import { useAuth } from "../../hooks/useAuth";
 import { canDeactivateIntern, canSetPin } from "../../utils/permissions";
 import { formatDate } from "../../utils/format";
 
-function Detail({ label, children }: { label: string; children: React.ReactNode }) {
+function Detail({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div>
       <dt className="text-xs text-slate-500">{label}</dt>
@@ -23,7 +29,7 @@ function Detail({ label, children }: { label: string; children: React.ReactNode 
 export default function InternDetailsPage() {
   const { id } = useParams();
   const { data: intern, isPending, isError, error, refetch } = useIntern(id);
-  const { data: staff } = useCurrentStaff();
+  const { staff } = useAuth();
   const statusMutation = useSetInternStatus();
 
   const [pinOpen, setPinOpen] = useState(false);
@@ -38,7 +44,7 @@ export default function InternDetailsPage() {
   return (
     <div>
       <PageHeader
-        title={intern.fullName}
+        title={intern.name}
         description={intern.email}
         actions={
           <>
@@ -49,12 +55,20 @@ export default function InternDetailsPage() {
               Edit
             </Link>
             {canSetPin(staff?.role) && (
-              <button type="button" className={btnSecondary} onClick={() => setPinOpen(true)}>
+              <button
+                type="button"
+                className={btnSecondary}
+                onClick={() => setPinOpen(true)}
+              >
                 Set / reset PIN
               </button>
             )}
             {canDeactivateIntern(staff?.role) && (
-              <button type="button" className={btnPrimary} onClick={() => setConfirmOpen(true)}>
+              <button
+                type="button"
+                className={btnPrimary}
+                onClick={() => setConfirmOpen(true)}
+              >
                 {isActive ? "Deactivate" : "Activate"}
               </button>
             )}
@@ -69,8 +83,8 @@ export default function InternDetailsPage() {
           </Detail>
           <Detail label="Phone">{intern.phone}</Detail>
           <Detail label="Group">{intern.group}</Detail>
-          <Detail label="Tech area">{intern.techArea}</Detail>
           <Detail label="Course / program">{intern.course}</Detail>
+          <Detail label="Department">{intern.department}</Detail>
           <Detail label="Internship period">
             {formatDate(intern.startDate)} – {formatDate(intern.endDate)}
           </Detail>
@@ -79,7 +93,10 @@ export default function InternDetailsPage() {
             <dd className="mt-1 flex flex-wrap gap-2">
               {intern.skills?.length ? (
                 intern.skills.map((s) => (
-                  <span key={s} className="rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-700">
+                  <span
+                    key={s}
+                    className="rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-700"
+                  >
                     {s}
                   </span>
                 ))
@@ -92,12 +109,16 @@ export default function InternDetailsPage() {
       </div>
 
       {pinOpen && (
-        <SetPinModal internId={intern.id} internName={intern.fullName} onClose={() => setPinOpen(false)} />
+        <SetPinModal
+          internId={intern.id}
+          internName={intern.name}
+          onClose={() => setPinOpen(false)}
+        />
       )}
 
       {confirmOpen && (
         <ConfirmDialog
-          title={`${isActive ? "Deactivate" : "Activate"} ${intern.fullName}?`}
+          title={`${isActive ? "Deactivate" : "Activate"} ${intern.name}?`}
           message={
             isActive
               ? "Inactive interns cannot sign in or out. You can activate them again at any time."
@@ -106,13 +127,20 @@ export default function InternDetailsPage() {
           confirmLabel={isActive ? "Deactivate" : "Activate"}
           destructive={isActive}
           loading={statusMutation.isPending}
-          error={statusMutation.error ? <ErrorAlert error={statusMutation.error} /> : undefined}
+          error={
+            statusMutation.error ? (
+              <ErrorAlert error={statusMutation.error} />
+            ) : undefined
+          }
           onCancel={() => {
             statusMutation.reset();
             setConfirmOpen(false);
           }}
           onConfirm={() =>
-            statusMutation.mutate({ id: intern.id, status: nextStatus }, { onSuccess: () => setConfirmOpen(false) })
+            statusMutation.mutate(
+              { id: intern.id, status: nextStatus },
+              { onSuccess: () => setConfirmOpen(false) },
+            )
           }
         />
       )}

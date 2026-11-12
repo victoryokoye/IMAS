@@ -30,9 +30,13 @@ export function toAppError(err: unknown): AppError {
     if (err.response) {
       const { status, data } = err.response;
       const fieldErrors: Record<string, string> = {};
-      data?.errors?.forEach((e) => {
-        if (e?.field && !fieldErrors[e.field]) fieldErrors[e.field] = e.message;
-      });
+      if (Array.isArray(data?.errors)) {
+        data?.errors?.forEach((e) => {
+          if (e?.field && !fieldErrors[e.field])
+            fieldErrors[e.field] = e.message;
+        });
+      }
+
       return {
         message:
           data?.message ??

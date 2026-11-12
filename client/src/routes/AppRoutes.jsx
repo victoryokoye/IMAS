@@ -43,63 +43,63 @@ export default function AppRoutes() {
       </Route>
 
       {/* Authenticated (any role) */}
-      {/* <Route element={<ProtectedRoute />}> */}
-      <Route element={<DashboardLayout />}>
-        <Route index element={<Navigate to="/dashboard" replace />} />
-        <Route path="staff">
-          {" "}
-          <Route index element={<StaffListPage />} />{" "}
-          <Route path="new" element={<StaffCreatePage />} />{" "}
-          <Route path=":id/edit" element={<StaffEditPage />} />{" "}
-          <Route path=":id" element={<StaffDetailsPage />} />{" "}
-        </Route>
-        <Route path="dashboard" element={<DashboardPage />} />
-
-        <Route path="interns">
-          <Route index element={<InternListPage />} />
-          <Route path="new" element={<InternFormPage />} />
-          <Route path=":id" element={<InternDetailsPage />} />
-          <Route path=":id/edit" element={<InternFormPage />} />
-        </Route>
-
-        <Route path="attendance">
-          <Route index element={<TodayAttendancePage />} />
-          <Route path="history" element={<AttendanceHistoryPage />} />
-          <Route
-            path="history/:internId"
-            element={<InternAttendanceRecordsPage />}
-          />{" "}
-          {/* 2 */}
-          <Route path=":id" element={<AttendanceDetailsPage />} />
-        </Route>
-
-        <Route path="403" element={<ForbiddenPage />} />
-
-        {/* Administrator + Supervisor */}
-        <Route
-          element={
-            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]} />
-          }
-        >
-          <Route path="projects">
-            <Route index element={<ProjectListPage />} />
-            <Route path="new" element={<ProjectFormPage />} />
-            <Route path=":id" element={<ProjectDetailsPage />} />
-            <Route path=":id/edit" element={<ProjectFormPage />} />
-          </Route>
-        </Route>
-
-        {/* Administrator only */}
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+      <Route element={<ProtectedRoute />}>
+        <Route element={<DashboardLayout />}>
+          <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="staff">
-            <Route index element={<StaffListPage />} />
-            <Route path="new" element={<StaffCreatePage />} />
-            <Route path=":id" element={<StaffDetailsPage />} />
-            <Route path=":id/edit" element={<StaffEditPage />} />
+            {" "}
+            <Route index element={<StaffListPage />} />{" "}
+            <Route path="new" element={<StaffCreatePage />} />{" "}
+            <Route path=":id/edit" element={<StaffEditPage />} />{" "}
+            <Route path=":id" element={<StaffDetailsPage />} />{" "}
+          </Route>
+          <Route path="dashboard" element={<DashboardPage />} />
+
+          <Route path="interns">
+            <Route index element={<InternListPage />} />
+            <Route path="new" element={<InternFormPage />} />
+            <Route path=":id" element={<InternDetailsPage />} />
+            <Route path=":id/edit" element={<InternFormPage />} />
+          </Route>
+
+          <Route path="attendance">
+            <Route index element={<TodayAttendancePage />} />
+            <Route path="history" element={<AttendanceHistoryPage />} />
+            <Route
+              path="history/:internId"
+              element={<InternAttendanceRecordsPage />}
+            />{" "}
+            {/* 2 */}
+            <Route path=":id" element={<AttendanceDetailsPage />} />
+          </Route>
+
+          <Route path="403" element={<ForbiddenPage />} />
+
+          {/* Administrator + Supervisor */}
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SUPERVISOR]} />
+            }
+          >
+            <Route path="projects">
+              <Route index element={<ProjectListPage />} />
+              <Route path="new" element={<ProjectFormPage />} />
+              <Route path=":id" element={<ProjectDetailsPage />} />
+              <Route path=":id/edit" element={<ProjectFormPage />} />
+            </Route>
+          </Route>
+
+          {/* Administrator only */}
+          <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+            <Route path="staff">
+              <Route index element={<StaffListPage />} />
+              <Route path="new" element={<StaffCreatePage />} />
+              <Route path=":id" element={<StaffDetailsPage />} />
+              <Route path=":id/edit" element={<StaffEditPage />} />
+            </Route>
           </Route>
         </Route>
       </Route>
-      {/* </Route> */}
 
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

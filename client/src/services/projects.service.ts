@@ -1,8 +1,7 @@
 import { api } from "./api";
 import { cleanParams } from "../utils/params";
+import { toPaginated, unwrap } from "../utils/pagination";
 import type {
-  ApiList,
-  ApiSuccess,
   Paginated,
   Project,
   ProjectInput,
@@ -22,34 +21,33 @@ export interface ProjectInternParams {
   limit?: number;
 }
 
+/** Fills in names the backend might send differently, so the UI sees one shape. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function normalizeProjectIntern(raw: any): ProjectIntern {
+  return { ...raw, fullName: raw.fullName ?? raw.name ?? "" };
+}
+
 export const projectsService = {
   list: async (params: ProjectListParams): Promise<Paginated<Project>> => {
-    const { data } = await api.get<ApiList<Project>>("/projects", {
-      params: cleanParams(params),
-    });
-    return { items: data.data, meta: data.meta };
+    const res = await api.get("/projects", { params: cleanParams(params) });
+    return toPaginated<Project>(res.data, undefined, params);
   },
 
-  get: async (id: string) => (await api.get<ApiSuccess<Project>>(`/projects/${id}`)).data.data,
+  get: async (id: string) => unwrap<Project>((await api.get(`/projects/${id}`)).data, "project"),
 
   create: async (input: ProjectInput) =>
-    (await api.post<ApiSuccess<Project>>("/projects", input)).data.data,
+    unwrap<Project>((await api.post("/projects", input)).data, "project"),
 
   // PUT does not accept `status`; the contract has a dedicated PATCH for that
   update: async (id: string, input: Omit<ProjectInput, "status">) =>
-    (await api.put<ApiSuccess<Project>>(`/projects/${id}`, input)).data.data,
+    unwrap<Project>((await api.put(`/projects/${id}`, input)).data, "project"),
 
   setStatus: async (id: string, status: ProjectStatus) =>
-    (await api.patch<ApiSuccess<Project>>(`/projects/${id}/status`, { status })).data.data,
+    unwrap<Project>((await api.patch(`/projects/${id}/status`, { status })).data, "project"),
 
-  listInterns: async (
-    id: string,
-    params: ProjectInternParams,
-  ): Promise<Paginated<ProjectIntern>> => {
-    const { data } = await api.get<ApiList<ProjectIntern>>(`/projects/${id}/interns`, {
-      params: cleanParams(params),
-    });
-    return { items: data.data, meta: data.meta };
+  listInterns: async (id: string, params: ProjectInternParams): Promise<Paginated<ProjectIntern>> => {
+    const res = await api.get(`/projects/${id}/interns`, { params: cleanParams(params) });
+    return toPaginated<ProjectIntern>(res.data, normalizeProjectIntern, params);
   },
 
   assignInterns: async (id: string, internIds: string[]) => {
