@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useDashboardSummary } from "../../hooks/useDashboard";
 import { useAuth } from "../../hooks/useAuth";
 import RecentAttendanceLog from "../../components/dashboard/RecentAttendanceLog";
@@ -231,9 +232,9 @@ function DashboardPage() {
             const Icon = link.icon;
 
             return (
-              <a
+              <Link
                 key={link.title}
-                href={link.path}
+                to={link.path}
                 className="group rounded-xl border border-gray-200 bg-white p-5 transition hover:border-blue-300 hover:shadow-md"
               >
                 <div className="flex items-center justify-between">
@@ -252,7 +253,7 @@ function DashboardPage() {
                 </h3>
 
                 <p className="mt-1 text-sm text-gray-500">{link.description}</p>
-              </a>
+              </Link>
             );
           })}
         </div>
